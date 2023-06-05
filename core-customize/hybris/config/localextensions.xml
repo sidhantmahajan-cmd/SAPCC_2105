@@ -4,7 +4,7 @@
     <!--<path dir='${HYBRIS_BIN_DIR}/modules-cep'  autoload='false' />-->
     
     <path dir='${HYBRIS_BIN_DIR}' autoload='false' />
-	  <extension name='adaptivesearch' />
+	<extension name='adaptivesearch' />
     <extension name='adaptivesearchbackoffice' />
     <extension name='adaptivesearchfacades' />
     <extension name='adaptivesearchsamplesaddon' />
