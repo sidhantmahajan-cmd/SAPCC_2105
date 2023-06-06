@@ -216,11 +216,6 @@
             "addon": "assistedservicecustomerinterestsaddon",
             "storefront": "yacceleratorstorefront",
             "template": "yacceleratorstorefront"
-        },
-		{
-            "addon": "yacceleratorfacades",
-            "storefront": "yacceleratorstorefront",
-            "template": "yacceleratorstorefront"
         }
     ],
     "aspects": [
