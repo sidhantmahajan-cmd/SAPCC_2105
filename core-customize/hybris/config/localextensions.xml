@@ -1,10 +1,7 @@
 <hybrisconfig xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:noNamespaceSchemaLocation='../bin/platform/resources/schemas/extensions.xsd'>
   <extensions>
-    <!-- Uncomment the following if you have enabled Cloud Extension Pack-->
-    <!--<path dir='${HYBRIS_BIN_DIR}/modules-cep'  autoload='false' />-->
-    
     <path dir='${HYBRIS_BIN_DIR}' autoload='false' />
-	<extension name='adaptivesearch' />
+    <extension name='adaptivesearch' />
     <extension name='adaptivesearchbackoffice' />
     <extension name='adaptivesearchfacades' />
     <extension name='adaptivesearchsamplesaddon' />
@@ -22,27 +19,27 @@
     <!--<extension name='assistedservicewebservices' />-->
     <extension name='assistedserviceyprofileaddon' />
     <extension name='assistedserviceyprofilefacades' />
-    <!--<extension name='yaasyprofileconnect' />
+    <extension name='yaasyprofileconnect' />
     <extension name='b2bacceleratoraddon' />
     <extension name='b2bacceleratorfacades' />
     <extension name='b2bacceleratorservices' />
-    <extension name='b2bocc' />
-    <extension name='b2bocctests' />
-    <extension name='b2bwebservicescommons' />-->
+    <!-- <extension name='b2bocc' />
+    <extension name='b2bocctests' /> -->
+    <extension name='b2bwebservicescommons' />
     <extension name='commerceorgaddon' />
     <extension name='commerceorgsamplesaddon' />
-    <!--<extension name='powertoolsstore' />-->
+    <extension name='powertoolsstore' />
     <extension name='accountsummaryaddon' />
-    <!--<extension name='b2bpunchout' />
-    <extension name='b2bpunchoutaddon' />-->
+    <extension name='b2bpunchout' />
+    <extension name='b2bpunchoutaddon' />
     <extension name='savedorderforms' />
     <!--<extension name='savedorderformsocc' />-->
     <extension name='secureportaladdon' />
-    <!--<extension name='b2bapprovalprocess' />
+    <extension name='b2bapprovalprocess' />
     <extension name='b2bapprovalprocessfacades' />
     <extension name='b2bcommerce' />
     <extension name='b2bcommercebackoffice' />
-    <extension name='b2bcommercefacades' />-->
+    <extension name='b2bcommercefacades' />
     <extension name='apparelstore' />
     <extension name='electronicsstore' />
     <extension name='captchaaddon' />
@@ -74,10 +71,10 @@
     <extension name='profileservices' />
     <extension name='profiletagaddon' />
     <extension name='merchandisingaddon' />
-    <!--<extension name='merchandisingcmswebservices' />
+    <!--<extension name='merchandisingcmswebservices' />-->
     <extension name='merchandisingservices' />
     <extension name='merchandisingservicesbackoffice' />
-    <extension name='merchandisingsmartedit' />-->
+    <!--<extension name='merchandisingsmartedit' />-->
     <extension name='merchandisingstorefrontsampledataaddon' />
     <extension name='admincockpit' />
     <extension name='productcockpit' />
@@ -97,8 +94,8 @@
     <extension name='configurablebundleocctests' />-->
     <extension name='configurablebundleservices' />
     <extension name='configurablebundlecockpits' />
-    <!--<extension name='sapproductconfigb2baddon' />
-    <extension name='sapproductconfigb2bservices' />-->
+    <extension name='sapproductconfigb2baddon' />
+    <extension name='sapproductconfigb2bservices' />
     <extension name='sapproductconfigfacades' />
     <!--<extension name='sapproductconfigocc' />
     <extension name='sapproductconfigocctests' />-->
@@ -173,8 +170,8 @@
     <extension name='notificationocc' />
     <extension name='notificationservices' />
     <extension name='npmancillary' />
-    <!--<extension name='b2bordermanagementfacades' />
-    <extension name='b2bordermanagementwebservices' />-->
+    <extension name='b2bordermanagementfacades' />
+    <extension name='b2bordermanagementwebservices' />
     <extension name='ordermanagementaddon' />
     <extension name='ordermanagementfacades' />
     <extension name='ordermanagementwebservices' />
@@ -285,21 +282,21 @@
     <extension name='permissionsfacades' />
     <extension name='permissionswebservices' />
     <extension name='webservicescommons' />
-    <!--<extension name='ywebservices' />
-    <extension name='orbeonweb' />-->
+    <!--<extension name='ywebservices' />-->
+    <extension name='orbeonweb' />
     <extension name='xyformsbackoffice' />
     <extension name='xyformsfacades' />
     <extension name='xyformssamples' />
     <extension name='xyformsservices' />
     <extension name='xyformsstorefrontcommons' />
     <extension name='xyformsweb' />
-
-<!-- custome extension -->
+	
+	<!-- custome extension -->
     <extension name='sncustomwebservices'/>
 	
 <!-- Sample Custom Extensions -->
     <extension name='kiwi' />
-	<extension name= 'spartacussampledata' />
+	<extension name='spartacussampledata' />
     <extension name='tiger'/>
 
 <!-- For more information where to find those extensions: -->
@@ -307,19 +304,6 @@
     <!--<extension name='azurecloudhotfolder' />
     <extension name='cloudcommons' />
     <extension name='cloudhotfolder' />-->
-
-
-<!-- Configuring Required Extensions and AddOns for SAP Commerce integration with SAP Cloud Platform Integration -->
-<!-- https://help.sap.com/viewer/product/SAP_COMMERCE_INTEGRATIONS/latest -->
-    <!--<extension name='sapcpiadapter'/>
-    <extension name='sapcpiorderexchange'/>
-    <extension name='ysaporderfulfillment'/>
-    <extension name='integrationbackoffice'/>
-    <extension name='sapcoreconfigurationbackoffice'/>
-    <extension name='sapmodelbackoffice'/>
-    <extension name='saporderexchangebackoffice'/>
-    <extension name='sapcoreaddon'/>-->
-
-
+	
   </extensions>
 </hybrisconfig>
