@@ -305,6 +305,11 @@
 	<!-- custome extension -->
     <extension name='sncustomwebservices'/>
 	
+	<!-- Sample Custom Extensions -->
+    <extension name='kiwi' />
+    <extension name='tiger'/>
+	<extension name='spartacussampledata' />
+	<!--<extension name='yb2bacceleratorstorefront' />-->
 	
   </extensions>
 </hybrisconfig>
