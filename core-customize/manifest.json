@@ -90,8 +90,6 @@
         {
             "addons": [
                 "accountsummaryaddon",
-                "b2bacceleratoraddon",
-                "b2bpunchoutaddon",
                 "chinesecommerceorgaddressaddon",
                 "commerceorgaddon",
                 "commerceorgsamplesaddon",
@@ -289,10 +287,6 @@
                 {
                     "name": "tomcatembeddedserver",
                     "contextPath": "/tomcatembeddedserver"
-                },
-                {
-                    "name": "yempty",
-                    "contextPath": "/yempty"
                 },
                 {
                     "name": "embeddedserver",
