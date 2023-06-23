@@ -83,8 +83,7 @@
                 "ysapproductconfigaddon"
             ],
             "storefronts": [
-                "yacceleratorstorefront",
-                "yb2bacceleratorstorefront"
+                "yacceleratorstorefront"
             ],
             "template": "yacceleratorstorefront"
         },
@@ -98,7 +97,7 @@
                 "commerceorgsamplesaddon",
                 "sapproductconfigb2baddon"
             ],
-            "storefront": "yb2bacceleratorstorefront",
+            "storefront": "yacceleratorstorefront",
             "template": "yacceleratorstorefront"
         }
     ],
@@ -227,10 +226,6 @@
                 {
                     "name": "yacceleratorstorefront",
                     "contextPath": "/yacceleratorstorefront"
-                },
-                {
-                    "name": "yb2bacceleratorstorefront",
-                    "contextPath": "/yb2bacceleratorstorefront"
                 },
                 {
                     "name": "smartedit",
@@ -377,10 +372,6 @@
                 {
                     "name": "yacceleratorstorefront",
                     "contextPath": "/yacceleratorstorefront"
-                },
-                {
-                    "name": "yb2bacceleratorstorefront",
-                    "contextPath": "/yb2bacceleratorstorefront"
                 },
                 {
                     "name": "acceleratorservices",
@@ -556,10 +547,6 @@
                 {
                     "name": "yacceleratorstorefront",
                     "contextPath": "/yacceleratorstorefront"
-                },
-                {
-                    "name": "yb2bacceleratorstorefront",
-                    "contextPath": "/yb2bacceleratorstorefront"
                 },
                 {
                     "name": "acceleratorservices",
