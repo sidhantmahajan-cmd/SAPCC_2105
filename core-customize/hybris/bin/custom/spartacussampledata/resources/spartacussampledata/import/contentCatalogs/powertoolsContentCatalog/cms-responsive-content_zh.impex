@@ -1,0 +1,119 @@
+# -----------------------------------------------------------------------
+# [y] hybris Platform
+#
+# Copyright (c) 2019 SAP SE or an SAP affiliate company. All rights reserved.
+# The files in this addon are licensed under the Apache Software License, v. 2 
+# except as noted otherwise in the LICENSE file.
+# -----------------------------------------------------------------------
+# Import the CMS content for the powertools site
+#
+$contentCatalog=powertools-spaContentCatalog
+$contentCV=catalogVersion(CatalogVersion.catalog(Catalog.id[default=$contentCatalog]),CatalogVersion.version[default=Staged])[default=$contentCatalog:Staged]
+$siteResource=jar:de.hybris.platform.spartacussampledata.constants.SpartacussampledataConstants&/spartacussampledata/import/contentCatalogs/powertoolsContentCatalog
+$picture=media(code, $contentCV)
+$medias=medias(code, $contentCV);
+$mediaContainer=media(qualifier, $contentCV)[lang=$lang];
+$lang=zh
+
+# CMS Link Components
+UPDATE CMSLinkComponent;$contentCV[unique=true];uid[unique=true];linkName[lang=zh]
+ ;;CartLink;"Cart"
+ ;;FAQLink;"Frequently Asked Questions"
+ ;;HelpLink;"Help"
+ ;;MyCompanyLink;"My Company"
+ ;;OrdersLink;"Orders"
+ ;;SignOutLink;"Sign Out"
+ ;;StoreFinderLink;"Find a Store"
+
+# Site Logo Media
+INSERT_UPDATE Media;$contentCV[unique=true];code[unique=true];realfilename;@media[translator=de.hybris.platform.impex.jalo.media.MediaDataTranslator];mime[default='image/jpeg'];folder(qualifier)[default='images'];altText
+;;/images/theme/SAP_scrn_R.png;SAP_scrn_R.png;$siteResource/images/theme/SAP_scrn_R.png;image/png;;"SAP Commerce"
+
+# Site Logo Component
+UPDATE SimpleBannerComponent;$contentCV[unique=true];uid[unique=true];$picture[lang=$lang]
+;;SiteLogoComponent;/images/theme/SAP_scrn_R.png
+
+# CMSParagraphComponent
+UPDATE CMSParagraphComponent;$contentCV[unique=true];uid[unique=true];content[lang=zh]
+;;ContactUsParagraphComponent;"Contact"
+;;HelpParagraphComponent;"<strong>Need Help with your checkout process?</strong> <span>Contact Us or Call phone number.</span>"
+;;NoticeTextParagraph;"<div class=""cx-notice"">Copyright © 2020 SAP SE or an SAP affiliate company. All rights reserved.</div>"
+;;PageNotFoundParagraphComponent;"<h2>Oops!</h2><h3>We couldn't find the page you are looking for.</h3><p>Here are some useful links instead:</p>"
+;;SaleParagraphComponent;"Sale"
+
+# Media
+INSERT_UPDATE Media;$contentCV[unique=true];code[unique=true];@media[translator=de.hybris.platform.impex.jalo.media.MediaDataTranslator][forceWrite=true];mime[default='image/png'];realfilename;folder(qualifier)[default='images'];altText
+;;BudgetsHomeLinkImageZh;$siteResource/images/organization-home/budgets.svg;;budgets.svg;;[zh] Budgets
+;;CostCentersHomeLinkImageZh;$siteResource/images/organization-home/cost-centers.svg;;cost-centers.svg;;[zh] Cost Centers
+;;PurchaseLimitsHomeLinkImageZh;$siteResource/images/organization-home/purchase-limits.svg;;purchase-limits.svg;;[zh] Purchase Limits
+;;UnitsHomeLinkImageZh;$siteResource/images/organization-home/units.svg;;units.svg;;[zh] Units
+;;UserGroupsHomeLinkImageZh;$siteResource/images/organization-home/user-groups.svg;;user-groups.svg;;[zh] User Groups
+;;UsersHomeLinkImageZh;$siteResource/images/organization-home/users.svg;;users.svg;;[zh] Users
+
+# BannerComponent
+INSERT_UPDATE BannerComponent;$contentCV[unique=true];uid[unique=true];headline[lang=zh];content[lang=zh];media(code, $contentCV)[lang=zh]
+;;BudgetsHomeLink;[zh] Budgets;[zh] Budgets are assigned to cost centers and set overall purchase limits.;BudgetsHomeLinkImageZh
+;;CostCentersHomeLink;[zh] Cost Centers;[zh] All orders placed through your organization's purchase account are linked to a cost center for tracking purposes. Each unit can have multiple cost centers.;CostCentersHomeLinkImageZh
+;;PurchaseLimitsHomeLink;[zh] Purchase Limits;[zh] Purchase limits help you control spending by defining how much buyers can spend per order or per week, month, quarter, or year. Purchase limits can be assigned to users and user groups.;PurchaseLimitsHomeLinkImageZh
+;;UnitsHomeLink;[zh] Units;[zh] Units represent departments, stores, regions, or any other logical grouping that makes sense to you. Approvers are assigned to units and individual users. Units also store the shipping addresses buyers can use when making purchases.;UnitsHomeLinkImageZh
+;;UserGroupsHomeLink;[zh] User Groups;[zh] User groups allow you to group users together for the purposes of assigning purchase limits.;UserGroupsHomeLinkImageZh
+;;UsersHomeLink;[zh] Users;[zh] Users are the buyers, approvers, managers, and administrators of your organization. Each user is assigned a role for making or approving purchases.;UsersHomeLinkImageZh
+
+# Responsive Error page
+
+INSERT_UPDATE Media;mediaFormat(qualifier);$contentCV[unique=true];code[unique=true];@media[translator=de.hybris.platform.impex.jalo.media.MediaDataTranslator][forceWrite=true];mime[default='image/svg+xml'];realfilename;folder(qualifier)[default='images'];altText
+;widescreen;;Elec_1400x401_ErrorPage_ZH_1400W.svg;$siteResource/images/banners/site/Elec_ErrorPage.svg;;Elec_ErrorPage.svg;;"页面未找到"
+;mobile;;Elec_480x170_ErrorPage_ZH_480W.svg;$siteResource/images/banners/site/Elec_ErrorPage.svg;;Elec_ErrorPage.svg;;"页面未找到"
+;tablet;;Elec_770x221_ErrorPage_ZH_770W.svg;$siteResource/images/banners/site/Elec_ErrorPage.svg;;Elec_ErrorPage.svg;;"页面未找到"
+;desktop;;Elec_960x275_ErrorPage_ZH_960W.svg;$siteResource/images/banners/site/Elec_ErrorPage.svg;;Elec_ErrorPage.svg;;"页面未找到"
+
+INSERT_UPDATE MediaContainer;qualifier[unique=true];$medias;$contentCV[unique=true]
+;powertools-errorpage-pagenotfound-zh;Elec_480x170_ErrorPage_ZH_480W.svg,Elec_770x221_ErrorPage_ZH_770W.svg,Elec_960x275_ErrorPage_ZH_960W.svg,Elec_1400x401_ErrorPage_ZH_1400W.svg
+
+UPDATE SimpleResponsiveBannerComponent;$contentCV[unique=true];uid[unique=true];$mediaContainer
+;;PowertoolstronicsErrorpageBannerComponent;powertools-errorpage-pagenotfound-zh
+
+# Pages
+
+    
+# Content Pages
+UPDATE ContentPage;$contentCV[unique=true];uid[unique=true];title[lang=$lang]
+ ;;CancelOrderPage;"Cancel Order"
+ ;;Checkout;"Checkout"
+ ;;CheckoutDeliveryMode;"Checkout Delivery Mode"
+ ;;CheckoutPaymentDetails;"Checkout Payment Details"
+ ;;CheckoutPaymentType;"Checkout Payment Type"
+ ;;CheckoutReviewOrder;"Checkout Review Order"
+ ;;CheckoutShippingAddress;"Checkout Shipping Address"
+ ;;ConfirmCancelOrderPage;"Cancel Order Confirmation"
+ ;;ConfirmReturnOrderPage;"Return Order Confirmation"
+ ;;ManageBudgets;"Budgets"
+ ;;ManageCostCenters;"Cost Centers"
+ ;;ManagePermissions;"Purchase Limits"
+ ;;ManageUnits;"Units"
+ ;;ManageUserGroups;"User Groups"
+ ;;ManageUsers;"Users"
+ ;;MyCompany;"My Company"
+ ;;ReturnOrderPage;"Return Order"
+ ;;ReturnRequestDetailsPage;"Return Request Details"
+ ;;contactUs;"Contact Us"
+ ;;cpqConfig;"CPQ Configuration"
+ ;;cpqConfigOverview;"CPQ Configuration Overview"
+ ;;forgotPassword;"Reset Password"
+ ;;help;"Help"
+ ;;order-approval-dashboard;"Order Approval Dashboard"
+ ;;order-approval-details;"Order Approval"
+ ;;quickOrderPage;"Quick Order"
+ ;;register;"Create an Account"
+ ;;replenishmentConfirmationPage;"Replenishment Order Confirmation"
+ ;;resetPassword;"Reset Password"
+ ;;sale;"Sale"
+ ;;storefinderPage;"Find a Store"
+ ;;textfieldConfig;"Textfield Product Configuration"
+ ;;textfieldConfigOv;"Textfield Product Configuration Overview"
+ ;;update-profile;"Update Personal Details"
+ ;;updatePassword;"Update Password"
+ ;;variantConfig;"Variant Configuration"
+ ;;variantConfigOverview;"Variant Configuration Overview"
+
+    
