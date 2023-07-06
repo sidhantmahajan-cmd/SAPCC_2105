@@ -17,7 +17,6 @@ import de.hybris.platform.cmsoccaddon.jaxb.adapters.pages.PageListWsDTOAdapter.L
 import de.hybris.platform.cmsoccaddon.jaxb.adapters.pages.PageWsDTOAdapter;
 import de.hybris.platform.cmsoccaddon.mapping.CMSDataMapper;
 import de.hybris.platform.commerceservices.request.mapping.annotation.ApiVersion;
-import de.hybris.platform.commercewebservicescommons.annotation.SecurePortalUnauthenticatedAccess;
 import de.hybris.platform.core.servicelayer.data.SearchPageData;
 import de.hybris.platform.webservicescommons.cache.CacheControl;
 import de.hybris.platform.webservicescommons.cache.CacheControlDirective;
@@ -72,7 +71,6 @@ public class PageController
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PageController.class);
 
-	@SecurePortalUnauthenticatedAccess
 	@GetMapping(value = "/pages")
 	@ResponseStatus(HttpStatus.OK)
 	@ResponseBody
@@ -110,7 +108,6 @@ public class PageController
 		}
 	}
 
-	@SecurePortalUnauthenticatedAccess
 	@GetMapping(value = "/pages/{pageId}")
 	@ResponseStatus(HttpStatus.OK)
 	@ResponseBody
@@ -140,7 +137,6 @@ public class PageController
 		}
 	}
 
-	@SecurePortalUnauthenticatedAccess
 	@GetMapping(value = "/sitepages", params =
 	{ "currentPage" })
 	@ResponseStatus(HttpStatus.OK)

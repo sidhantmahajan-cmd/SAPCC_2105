@@ -16,7 +16,6 @@ import de.hybris.platform.cmsoccaddon.jaxb.adapters.components.ComponentListWsDT
 import de.hybris.platform.cmsoccaddon.jaxb.adapters.components.ComponentWsDTOAdapter;
 import de.hybris.platform.cmsoccaddon.mapping.CMSDataMapper;
 import de.hybris.platform.commerceservices.request.mapping.annotation.ApiVersion;
-import de.hybris.platform.commercewebservicescommons.annotation.SecurePortalUnauthenticatedAccess;
 import de.hybris.platform.core.servicelayer.data.SearchPageData;
 import de.hybris.platform.webservicescommons.cache.CacheControl;
 import de.hybris.platform.webservicescommons.cache.CacheControlDirective;
@@ -71,7 +70,6 @@ public class ComponentController
 	@Resource(name = "webPaginationUtils")
 	private WebPaginationUtils webPaginationUtils;
 
-	@SecurePortalUnauthenticatedAccess
 	@GetMapping(value = "/components/{componentId}")
 	@ResponseBody
 	@ApiOperation(value = "Get component data by id", notes = "Given a component identifier, return cms component data.", nickname = "getComponentById")
@@ -142,7 +140,6 @@ public class ComponentController
 				pageSize, sort);
 	}
 
-	@SecurePortalUnauthenticatedAccess
 	@GetMapping(value = "/components")
 	@ResponseBody
 	@ApiOperation(value = "Get component data", notes = "Finds cms components by the specified IDs. When none is provided, this will retrieve all components"
