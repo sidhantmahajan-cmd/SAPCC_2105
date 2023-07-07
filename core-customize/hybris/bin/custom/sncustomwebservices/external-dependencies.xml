@@ -8,4 +8,24 @@
 	<artifactId>sncustomwebservices</artifactId>
 	<version>2105.7</version>
 	<packaging>jar</packaging>
+	<properties>
+		<swagger.version>2.2.2</swagger.version>	
+	</properties>
+	<dependencies>
+		<dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-core</artifactId>
+            <version>${swagger.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-annotations</artifactId>
+            <version>${swagger.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-models</artifactId>
+            <version>${swagger.version}</version>
+        </dependency>
+    </dependencies>
 </project>
