@@ -9,7 +9,9 @@
 	<version>2105.7</version>
 
 	<packaging>jar</packaging>
-
+	<properties>
+		<swagger.version>2.2.2</swagger.version>	
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.glassfish.web</groupId>
@@ -27,5 +29,20 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-core</artifactId>
+            <version>${swagger.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-annotations</artifactId>
+            <version>${swagger.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-models</artifactId>
+            <version>${swagger.version}</version>
+        </dependency>
 	</dependencies>
 </project>
