@@ -21,13 +21,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 
 @Controller
 @RequestMapping(value = "/{baseSiteId}/paymentmodes")
-@Api(tags = "Payment Modes")
+@Tag(name = "Payment Modes")
 public class PaymentModesController extends BaseController
 {
 	@Resource(name = "dataMapper")
@@ -41,7 +41,7 @@ public class PaymentModesController extends BaseController
 
 	@ResponseBody
 	@RequestMapping(method = RequestMethod.GET)
-	@ApiOperation(nickname = "getPaymentModes", value = "Gets all available payment modes.", notes = "Gets all payment modes defined for the base store.")
+	@Operation(operationId = "getPaymentModes", summary = "Gets all available payment modes.", description = "Gets all payment modes defined for the base store.")
 	@ApiBaseSiteIdParam
 	public PaymentModeListWsDTO getPaymentModes(
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)

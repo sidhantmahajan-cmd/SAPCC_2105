@@ -11,7 +11,6 @@ import de.hybris.platform.webservicescommons.cache.CacheControl;
 import de.hybris.platform.webservicescommons.cache.CacheControlDirective;
 import de.hybris.platform.webservicescommons.swagger.ApiBaseSiteIdUserIdAndCartIdParam;
 import de.hybris.platform.webservicescommons.swagger.ApiFieldsParam;
-import com.sncustomwebservices.exceptions.UnsupportedDeliveryModeException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,15 +25,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import com.sncustomwebservices.exceptions.UnsupportedDeliveryModeException;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 
 @Controller
 @RequestMapping(value = "/{baseSiteId}/users/{userId}/carts")
 @CacheControl(directive = CacheControlDirective.NO_CACHE)
-@Api(tags = "Cart Delivery Modes")
+@Tag(name = "Cart Delivery Modes")
 public class CartDeliveryModesController extends BaseCommerceController
 {
 	private static final Logger LOG = LoggerFactory.getLogger(CartDeliveryModesController.class);
@@ -42,7 +43,7 @@ public class CartDeliveryModesController extends BaseCommerceController
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_GUEST", "ROLE_CUSTOMERMANAGERGROUP", "ROLE_TRUSTED_CLIENT" })
 	@GetMapping(value = "/{cartId}/deliverymode")
 	@ResponseBody
-	@ApiOperation(nickname = "getCartDeliveryMode", value = "Get the delivery mode selected for the cart.", notes = "Returns the delivery mode selected for the cart.")
+	@Operation(operationId = "getCartDeliveryMode", summary = "Get the delivery mode selected for the cart.", description = "Returns the delivery mode selected for the cart.")
 	@ApiBaseSiteIdUserIdAndCartIdParam
 	public DeliveryModeWsDTO getCartDeliveryMode(
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
@@ -54,10 +55,12 @@ public class CartDeliveryModesController extends BaseCommerceController
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_GUEST", "ROLE_CUSTOMERMANAGERGROUP", "ROLE_TRUSTED_CLIENT" })
 	@PutMapping(value = "/{cartId}/deliverymode")
 	@ResponseStatus(HttpStatus.OK)
-	@ApiOperation(nickname = "replaceCartDeliveryMode", value = "Sets the delivery mode for a cart.", notes = "Sets the delivery mode with a given identifier for the cart.")
+	@Operation(operationId = "replaceCartDeliveryMode", summary = "Sets the delivery mode for a cart.", description = "Sets the delivery mode with a given identifier for the cart.")
 	@ApiBaseSiteIdUserIdAndCartIdParam
 	public void replaceCartDeliveryMode(
-			@ApiParam(value = "Delivery mode identifier (code)", required = true) @RequestParam(required = true) final String deliveryModeId)
+			@Parameter(description = "Delivery mode identifier (code)", required = true)
+			@RequestParam(required = true)
+			final String deliveryModeId)
 			throws UnsupportedDeliveryModeException
 	{
 		setCartDeliveryModeInternal(deliveryModeId);
@@ -66,7 +69,7 @@ public class CartDeliveryModesController extends BaseCommerceController
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_GUEST", "ROLE_CUSTOMERMANAGERGROUP", "ROLE_TRUSTED_CLIENT" })
 	@DeleteMapping(value = "/{cartId}/deliverymode")
 	@ResponseStatus(HttpStatus.OK)
-	@ApiOperation(nickname = "removeCartDeliveryMode", value = "Deletes the delivery mode from the cart.", notes = "Deletes the delivery mode from the cart.")
+	@Operation(operationId = "removeCartDeliveryMode", summary = "Deletes the delivery mode from the cart.", description = "Deletes the delivery mode from the cart.")
 	@ApiBaseSiteIdUserIdAndCartIdParam
 	public void removeCartDeliveryMode()
 	{
@@ -80,7 +83,7 @@ public class CartDeliveryModesController extends BaseCommerceController
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_GUEST", "ROLE_CUSTOMERMANAGERGROUP", "ROLE_TRUSTED_CLIENT" })
 	@GetMapping(value = "/{cartId}/deliverymodes")
 	@ResponseBody
-	@ApiOperation(nickname = "getCartDeliveryModes", value = "Get all delivery modes for the current store and delivery address.", notes =
+	@Operation(operationId = "getCartDeliveryModes", summary = "Get all delivery modes for the current store and delivery address.", description =
 			"Returns all delivery modes supported for the "
 					+ "current base store and cart delivery address. A delivery address must be set for the cart, otherwise an empty list will be returned.")
 	@ApiBaseSiteIdUserIdAndCartIdParam

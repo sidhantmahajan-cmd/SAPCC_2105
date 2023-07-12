@@ -9,11 +9,10 @@ import de.hybris.platform.commercewebservicescommons.dto.basesite.BaseSiteListWs
 import de.hybris.platform.webservicescommons.cache.CacheControl;
 import de.hybris.platform.webservicescommons.cache.CacheControlDirective;
 import de.hybris.platform.webservicescommons.swagger.ApiFieldsParam;
-import com.sncustomwebservices.basesite.data.BaseSiteDataList;
-
-import javax.annotation.Resource;
 
 import java.util.List;
+
+import javax.annotation.Resource;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,14 +20,18 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import com.sncustomwebservices.basesite.data.BaseSiteDataList;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+
 
 
 @Controller
 @RequestMapping(value = "/basesites")
 @CacheControl(directive = CacheControlDirective.PUBLIC, maxAge = 360)
-@Api(tags = "Base Sites")
+@Tag(name = "Base Sites")
 public class BaseSitesController extends BaseController
 {
 	@Resource(name = "baseSiteFacade")
@@ -36,7 +39,7 @@ public class BaseSitesController extends BaseController
 
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(nickname = "getBaseSites", value = "Get all base sites.", notes = "Get all base sites with corresponding base stores details in FULL mode.")
+	@Operation(operationId = "getBaseSites", summary = "Get all base sites.", description = "Get all base sites with corresponding base stores details in FULL mode.")
 	public BaseSiteListWsDTO getBaseSites(@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
 		final List<BaseSiteData> allBaseSites = baseSiteFacade.getAllBaseSites();

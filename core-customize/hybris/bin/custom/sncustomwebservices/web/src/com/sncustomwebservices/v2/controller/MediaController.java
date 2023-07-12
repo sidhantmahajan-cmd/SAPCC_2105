@@ -34,9 +34,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.sncustomwebservices.facades.CustomProductFacade;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
  * @author Anand.Mund
@@ -44,7 +44,7 @@ import io.swagger.annotations.ApiParam;
  */
 
 @Controller
-@Api(tags = "Media")
+@Tag(name = "Media")
 @RequestMapping(value = "/{baseSiteId}/media")
 @CacheControl(directive = CacheControlDirective.PRIVATE)
 public class MediaController extends BaseController {
@@ -61,14 +61,14 @@ public class MediaController extends BaseController {
 	@RequestMapping(value = "/uploadImage", method = RequestMethod.POST/*, consumes = MediaType.MULTIPART_FORM_DATA_VALUE*/)
 	@ResponseStatus(value = HttpStatus.CREATED)
 	@ResponseBody
-	@ApiOperation(nickname = "uploadImage", value = "upload an Image")
+	@Operation(operationId = "uploadImage", summary = "upload an Image")
 	@ApiBaseSiteIdParam
 	public MediaWsDTO uploadMediaImage(
-			@ApiParam(value = "The MediaData containing the data for the associated media item to be created.", required = true)
+			@Parameter(description = "The MediaData containing the data for the associated media item to be created.", required = true)
 			@ModelAttribute("media") final MediaData media,
-			@ApiParam(value = "The unique identifier of the product for which to link the new image.", required = true)
+			@Parameter(description = "The unique identifier of the product for which to link the new image.", required = true)
 			@RequestParam("productId")	final String productId,
-			@ApiParam(value = "The file representing the actual binary contents of the media to be created.", required = true)
+			@Parameter(description = "The file representing the actual binary contents of the media to be created.", required = true)
 			@RequestParam(required = true, value = "file_field_1")
 			final MultipartFile multiPart
 	/* final HttpServletRequest httpRequest, final HttpServletResponse httpResponse */) throws IOException

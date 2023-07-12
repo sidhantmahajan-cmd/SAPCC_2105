@@ -22,8 +22,8 @@ import com.sncustomwebservices.facades.CustomBrandFacade;
 import com.sncustomwebservices.facades.data.BrandData;
 import com.sncustomwebservices.v2.data.BrandWsDTO;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
  * @author Anand.Mund
@@ -33,7 +33,7 @@ import io.swagger.annotations.ApiOperation;
 @Controller
 @RequestMapping(value = "/{baseSiteId}/brand")
 @CacheControl(directive = CacheControlDirective.PRIVATE)
-@Api(tags = "Brand")
+@Tag(name = "Brand")
 public class BrandController extends BaseController {
 
 	private static final Logger LOG = LoggerFactory.getLogger(BrandController.class);
@@ -43,7 +43,7 @@ public class BrandController extends BaseController {
 
 	@RequestMapping(value ={ "/search" }, method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(nickname = "getBrand", value = "Get the list of brand for a particular basestore..")
+	@Operation(operationId = "getBrand", summary = "Get the list of brand for a particular basestore..")
 	@ApiBaseSiteIdParam
 	public BrandWsDTO getBrand(@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)	{
 

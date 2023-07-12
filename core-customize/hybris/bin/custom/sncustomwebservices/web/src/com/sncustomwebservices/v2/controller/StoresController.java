@@ -16,8 +16,6 @@ import de.hybris.platform.webservicescommons.cache.CacheControl;
 import de.hybris.platform.webservicescommons.cache.CacheControlDirective;
 import de.hybris.platform.webservicescommons.swagger.ApiBaseSiteIdParam;
 import de.hybris.platform.webservicescommons.swagger.ApiFieldsParam;
-import com.sncustomwebservices.store.data.StoreCountListData;
-import com.sncustomwebservices.v2.helper.StoresHelper;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
@@ -29,15 +27,18 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import com.sncustomwebservices.store.data.StoreCountListData;
+import com.sncustomwebservices.v2.helper.StoresHelper;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 
 @Controller
 @CacheControl(directive = CacheControlDirective.PUBLIC, maxAge = 1800)
 @RequestMapping(value = "/{baseSiteId}/stores")
-@Api(tags = "Stores")
+@Tag(name = "Stores")
 public class StoresController extends BaseController
 {
 	private static final String DEFAULT_SEARCH_RADIUS_METRES = "100000.0";
@@ -50,17 +51,28 @@ public class StoresController extends BaseController
 
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(nickname = "getStoreLocations", value = "Get a list of store locations", notes = "Lists all store locations that are near the location specified in a query or based on latitude and longitude.")
+	@Operation(operationId = "getStoreLocations", summary = "Get a list of store locations", description = "Lists all store locations that are near the location specified in a query or based on latitude and longitude.")
 	@ApiBaseSiteIdParam
 	public StoreFinderSearchPageWsDTO getStoreLocations(
-			@ApiParam(value = "Location in natural language i.e. city or country.") @RequestParam(required = false) final String query,
-			@ApiParam(value = "Coordinate that specifies the north-south position of a point on the Earth's surface.") @RequestParam(required = false) final Double latitude,
-			@ApiParam(value = "Coordinate that specifies the east-west position of a point on the Earth's surface.") @RequestParam(required = false) final Double longitude,
-			@ApiParam(value = "The current result page requested.") @RequestParam(defaultValue = DEFAULT_CURRENT_PAGE) final int currentPage,
-			@ApiParam(value = "The number of results returned per page.") @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) final int pageSize,
-			@ApiParam(value = "Sorting method applied to the return results.") @RequestParam(defaultValue = "asc") final String sort,
-			@ApiParam(value = "Radius in meters. Max value: 40075000.0 (Earth's perimeter).") @RequestParam(defaultValue = DEFAULT_SEARCH_RADIUS_METRES) final double radius,
-			@ApiParam(value = "Accuracy in meters.") @RequestParam(defaultValue = DEFAULT_ACCURACY) final double accuracy,
+			@Parameter(description = "Location in natural language i.e. city or country.")
+			@RequestParam(required = false)
+			final String query,
+			@Parameter(description = "Coordinate that specifies the north-south position of a point on the Earth's surface.")
+			@RequestParam(required = false)
+			final Double latitude,
+			@Parameter(description = "Coordinate that specifies the east-west position of a point on the Earth's surface.")
+			@RequestParam(required = false)
+			final Double longitude, @Parameter(description = "The current result page requested.")
+			@RequestParam(defaultValue = DEFAULT_CURRENT_PAGE)
+			final int currentPage, @Parameter(description = "The number of results returned per page.")
+			@RequestParam(defaultValue = DEFAULT_PAGE_SIZE)
+			final int pageSize, @Parameter(description = "Sorting method applied to the return results.")
+			@RequestParam(defaultValue = "asc")
+			final String sort, @Parameter(description = "Radius in meters. Max value: 40075000.0 (Earth's perimeter).")
+			@RequestParam(defaultValue = DEFAULT_SEARCH_RADIUS_METRES)
+			final double radius, @Parameter(description = "Accuracy in meters.")
+			@RequestParam(defaultValue = DEFAULT_ACCURACY)
+			final double accuracy,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields, final HttpServletResponse response)
 	{
 		final StoreFinderSearchPageWsDTO result = storesHelper
@@ -75,10 +87,12 @@ public class StoresController extends BaseController
 
 	@RequestMapping(value = { "/country/{countryIso}" }, method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(nickname = "getStoresByCountry", value = "Get a list of store locations for a given country", notes = "Lists all store locations that are in the specified country.")
+	@Operation(operationId = "getStoresByCountry", summary = "Get a list of store locations for a given country", description = "Lists all store locations that are in the specified country.")
 	@ApiBaseSiteIdParam
 	public PointOfServiceListWsDTO getStoresByCountry(
-			@ApiParam(value = "Country ISO code", required = true) @PathVariable final String countryIso,
+			@Parameter(description = "Country ISO code", required = true)
+			@PathVariable
+			final String countryIso,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
 		final PointOfServiceDataList pointsOfService = new PointOfServiceDataList();
@@ -89,11 +103,14 @@ public class StoresController extends BaseController
 
 	@RequestMapping(value = { "/country/{countryIso}/region/{regionIso}" }, method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(nickname = "getStoresByCountryAndRegion", value = "Get a list of store locations for a given country and region", notes = "Lists all store locations that are in the specified country and region.")
+	@Operation(operationId = "getStoresByCountryAndRegion", summary = "Get a list of store locations for a given country and region", description = "Lists all store locations that are in the specified country and region.")
 	@ApiBaseSiteIdParam
 	public PointOfServiceListWsDTO getStoresByCountryAndRegion(
-			@ApiParam(value = "Country ISO code", required = true) @PathVariable final String countryIso,
-			@ApiParam(value = "Region ISO code", required = true) @PathVariable final String regionIso,
+			@Parameter(description = "Country ISO code", required = true)
+			@PathVariable
+			final String countryIso, @Parameter(description = "Region ISO code", required = true)
+			@PathVariable
+			final String regionIso,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
 		final PointOfServiceDataList pointsOfService = new PointOfServiceDataList();
@@ -103,18 +120,26 @@ public class StoresController extends BaseController
 	}
 
 	@RequestMapping(method = RequestMethod.HEAD)
-	@ApiOperation(nickname = "countStoreLocations", value = "Get a header with the number of store locations.", notes =
+	@Operation(operationId = "countStoreLocations", summary = "Get a header with the number of store locations.", description =
 			"In the response header, the \"x-total-count\" indicates the number of "
 					+ "all store locations that are near the location specified in a query, or based on latitude and longitude.")
 	@ApiBaseSiteIdParam
 	public void countStoreLocations(
-			@ApiParam(value = "Location in natural language i.e. city or country.") @RequestParam(required = false) final String query,
-			@ApiParam(value = "Coordinate that specifies the north-south position of a point on the Earth's surface.") @RequestParam(required = false) final Double latitude,
-			@ApiParam(value = "Coordinate that specifies the east-west position of a point on the Earth's surface.") @RequestParam(required = false) final Double longitude,
-			@ApiParam(value = "Radius in meters. Max value: 40075000.0 (Earth's perimeter).") @RequestParam(defaultValue = DEFAULT_SEARCH_RADIUS_METRES) final double radius,
-			@ApiParam(value = "Accuracy in meters.") @RequestParam(defaultValue = DEFAULT_ACCURACY) final double accuracy,
+			@Parameter(description = "Location in natural language i.e. city or country.")
+			@RequestParam(required = false)
+			final String query,
+			@Parameter(description = "Coordinate that specifies the north-south position of a point on the Earth's surface.")
+			@RequestParam(required = false)
+			final Double latitude,
+			@Parameter(description = "Coordinate that specifies the east-west position of a point on the Earth's surface.")
+			@RequestParam(required = false)
+			final Double longitude, @Parameter(description = "Radius in meters. Max value: 40075000.0 (Earth's perimeter).")
+			@RequestParam(defaultValue = DEFAULT_SEARCH_RADIUS_METRES)
+			final double radius, @Parameter(description = "Accuracy in meters.")
+			@RequestParam(defaultValue = DEFAULT_ACCURACY)
+			final double accuracy,
 			final HttpServletResponse response)	{
-		
+
 		final StoreFinderSearchPageData<PointOfServiceData> result = storesHelper
 				.locationSearch(query, latitude, longitude, 0, 1, "asc", radius, accuracy);
 
@@ -124,34 +149,36 @@ public class StoresController extends BaseController
 
 
 	@RequestMapping(value = "/{storeId}", method = RequestMethod.GET)
-	@ApiOperation(nickname = "getStoreLocation", value = "Get a store location", notes = "Returns store location based on its unique name.")
+	@Operation(operationId = "getStoreLocation", summary = "Get a store location", description = "Returns store location based on its unique name.")
 	@ApiBaseSiteIdParam
 	@ResponseBody
 	public PointOfServiceWsDTO getStoreLocation(
-			@ApiParam(value = "Store identifier (currently store name)", required = true) @PathVariable final String storeId,
+			@Parameter(description = "Store identifier (currently store name)", required = true)
+			@PathVariable
+			final String storeId,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
 		return storesHelper.locationDetails(storeId, fields);
 	}
 
 	@RequestMapping(value = "/storescounts", method = RequestMethod.GET)
-	@ApiOperation(nickname = "getLocationCounts", value = "Gets a store location count per country and regions", notes = "Returns store counts in countries and regions")
+	@Operation(operationId = "getLocationCounts", summary = "Gets a store location count per country and regions", description = "Returns store counts in countries and regions")
 	@ApiBaseSiteIdParam
 	@ResponseBody
 	public StoreCountListWsDTO getLocationCounts(){
-		
+
 		final StoreCountListData storeCountListData = new StoreCountListData();
 		storeCountListData.setCountriesAndRegionsStoreCount(storeFinderFacade.getStoreCounts());
 		return getDataMapper().map(storeCountListData, StoreCountListWsDTO.class);
 	}
-	
+
 	@RequestMapping(value = "/getStoreByName/{storeName}", method = RequestMethod.GET)
-	@ApiOperation(nickname = "getStoreByName", value = "Get a store by name", notes = "Returns store based on its unique name.")
+	@Operation(operationId = "getStoreByName", summary = "Get a store by name", description = "Returns store based on its unique name.")
 	@ApiBaseSiteIdParam
 	@ResponseBody
-	public PointOfServiceWsDTO getStoreByName(@ApiParam(value = "Store identifier (by store name)", required = true)
+	public PointOfServiceWsDTO getStoreByName(@Parameter(description = "Store identifier (by store name)", required = true)
 	@PathVariable final String storeName, @ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)	{
-		
+
 		return storesHelper.locationDetails(storeName, fields);
 	}
 }

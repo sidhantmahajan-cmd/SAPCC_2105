@@ -20,11 +20,11 @@ import de.hybris.platform.webservicescommons.mapping.impl.FieldSetBuilderContext
 import de.hybris.platform.webservicescommons.swagger.ApiBaseSiteIdParam;
 import de.hybris.platform.webservicescommons.swagger.ApiFieldsParam;
 
-import javax.annotation.Resource;
-
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+
+import javax.annotation.Resource;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,14 +33,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 
 @Controller
 @RequestMapping(value = "/{baseSiteId}/catalogs")
-@Api(tags = "Catalogs")
+@Tag(name = "Catalogs")
 public class CatalogsController extends BaseController
 {
 	private static final Set<CatalogOption> OPTIONS = EnumSet
@@ -53,7 +53,7 @@ public class CatalogsController extends BaseController
 
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(nickname = "getCatalogs", value = "Get a list of catalogs", notes = "Returns all catalogs with versions defined for the base store.")
+	@Operation(operationId = "getCatalogs", summary = "Get a list of catalogs", description = "Returns all catalogs with versions defined for the base store.")
 	@ApiBaseSiteIdParam
 	public CatalogListWsDTO getCatalogs(@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
@@ -71,9 +71,11 @@ public class CatalogsController extends BaseController
 
 	@RequestMapping(value = "/{catalogId}", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(nickname = "getCatalog", value = "Get a catalog", notes = "Returns information about a catalog based on its ID, along with the versions defined for the current base store.")
+	@Operation(operationId = "getCatalog", summary = "Get a catalog", description = "Returns information about a catalog based on its ID, along with the versions defined for the current base store.")
 	@ApiBaseSiteIdParam
-	public CatalogWsDTO getCatalog(@ApiParam(value = "Catalog identifier", required = true) @PathVariable final String catalogId,
+	public CatalogWsDTO getCatalog(@Parameter(name = "Catalog identifier", required = true)
+	@PathVariable
+	final String catalogId,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
 		final CatalogData catalogData = catalogFacade.getProductCatalogForCurrentSite(catalogId, OPTIONS);
@@ -87,11 +89,14 @@ public class CatalogsController extends BaseController
 
 	@RequestMapping(value = "/{catalogId}/{catalogVersionId}", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(nickname = "getCatalogVersion", value = "Get information about catalog version", notes = "Returns information about the catalog version that exists for the current base store.")
+	@Operation(operationId = "getCatalogVersion", summary = "Get information about catalog version", description = "Returns information about the catalog version that exists for the current base store.")
 	@ApiBaseSiteIdParam
 	public CatalogVersionWsDTO getCatalogVersion(
-			@ApiParam(value = "Catalog identifier", required = true) @PathVariable final String catalogId,
-			@ApiParam(value = "Catalog version identifier", required = true) @PathVariable final String catalogVersionId,
+			@Parameter(name = "Catalog identifier", required = true)
+			@PathVariable
+			final String catalogId, @Parameter(name = "Catalog version identifier", required = true)
+			@PathVariable
+			final String catalogVersionId,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
 		final CatalogVersionData catalogVersionData = catalogFacade
@@ -107,12 +112,16 @@ public class CatalogsController extends BaseController
 
 	@RequestMapping(value = "/{catalogId}/{catalogVersionId}/categories/{categoryId}", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(nickname = "getCategories", value = "Get information about catagory in a catalog version", notes = "Returns information about a specified category that exists in a catalog version available for the current base store.")
+	@Operation(operationId = "getCategories", summary = "Get information about catagory in a catalog version", description = "Returns information about a specified category that exists in a catalog version available for the current base store.")
 	@ApiBaseSiteIdParam
 	public CategoryHierarchyWsDTO getCategories(
-			@ApiParam(value = "Catalog identifier", required = true) @PathVariable final String catalogId,
-			@ApiParam(value = "Catalog version identifier", required = true) @PathVariable final String catalogVersionId,
-			@ApiParam(value = "Category identifier", required = true) @PathVariable final String categoryId,
+			@Parameter(name = "Catalog identifier", required = true)
+			@PathVariable
+			final String catalogId, @Parameter(name = "Catalog version identifier", required = true)
+			@PathVariable
+			final String catalogVersionId, @Parameter(name = "Category identifier", required = true)
+			@PathVariable
+			final String categoryId,
 			@ApiFieldsParam @RequestParam(defaultValue = "DEFAULT") final String fields)
 	{
 		final PageOption page = PageOption.createForPageNumberAndPageSize(0, 10);

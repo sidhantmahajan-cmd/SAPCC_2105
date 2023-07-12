@@ -13,12 +13,11 @@ import de.hybris.platform.webservicescommons.cache.CacheControl;
 import de.hybris.platform.webservicescommons.cache.CacheControlDirective;
 import de.hybris.platform.webservicescommons.swagger.ApiBaseSiteIdParam;
 import de.hybris.platform.webservicescommons.swagger.ApiFieldsParam;
-import com.sncustomwebservices.product.data.PromotionDataList;
-
-import javax.annotation.Resource;
 
 import java.util.EnumSet;
 import java.util.List;
+
+import javax.annotation.Resource;
 
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.access.annotation.Secured;
@@ -29,10 +28,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.Authorization;
+import com.sncustomwebservices.product.data.PromotionDataList;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 
 /**
@@ -43,7 +45,7 @@ import io.swagger.annotations.Authorization;
 @Controller
 @RequestMapping(value = "/{baseSiteId}/promotions")
 @CacheControl(directive = CacheControlDirective.PUBLIC, maxAge = 300)
-@Api(tags = "Promotions")
+@Tag(name = "Promotions")
 public class PromotionsController extends BaseController
 {
 	private static final String ORDER_PROMOTION = "order";
@@ -58,15 +60,17 @@ public class PromotionsController extends BaseController
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
 	@Cacheable(value = "promotionCache", key = "T(de.hybris.platform.commercewebservicescommons.cache.CommerceCacheKeyGenerator).generateKey(false,true,'getPromotions',#type,#promotionGroup,#fields)")
-	@ApiOperation(nickname = "getPromotions", value = "Get a list of promotions.", notes =
+	@Operation(operationId = "getPromotions", summary = "Get a list of promotions.", description =
 			"Returns promotions defined for a current base site. Requests pertaining to promotions have been developed "
-					+ "for the previous version of promotions and vouchers and therefore some of them are currently not compatible with the new promotion engine.", authorizations = {
-			@Authorization(value = "oauth2_client_credentials") })
+			+ "for the previous version of promotions and vouchers and therefore some of them are currently not compatible with the new promotion engine.", security = @SecurityRequirement(name = "oauth2_client_credentials"))
 	@ApiBaseSiteIdParam
-	public PromotionListWsDTO getPromotions(@ApiParam(value =
+	public PromotionListWsDTO getPromotions(@Parameter(description =
 			"Defines what type of promotions should be returned. Values supported for that parameter are: <ul><li>all: All available promotions are "
-					+ "returned</li><li>product: Only product promotions are returned</li><li>order: Only order promotions are returned</li></ul>", allowableValues = "all, product, order", required = true) @RequestParam final String type,
-			@ApiParam(value = "Only promotions from this group are returned") @RequestParam(required = false) final String promotionGroup,
+			+ "returned</li><li>product: Only product promotions are returned</li><li>order: Only order promotions are returned</li></ul>", schema = @Schema(allowableValues = "all, product, order", required = true))
+	@RequestParam
+	final String type, @Parameter(description = "Only promotions from this group are returned")
+			@RequestParam(required = false)
+			final String promotionGroup,
 			@ApiFieldsParam(defaultValue = BASIC_FIELD_SET) @RequestParam(defaultValue = BASIC_FIELD_SET) final String fields)
 	{
 		validateTypeParameter(type);
@@ -80,13 +84,16 @@ public class PromotionsController extends BaseController
 	@RequestMapping(value = "/{code}", method = RequestMethod.GET)
 	@Cacheable(value = "promotionCache", key = "T(de.hybris.platform.commercewebservicescommons.cache.CommerceCacheKeyGenerator).generateKey(false,true,'getPromotions',#code,#fields)")
 	@ResponseBody
-	@ApiOperation(nickname = "getPromotion", value = "Get a promotion based on code", notes =
+	@Operation(operationId="getPromotion",summary="Get a promotion based on code",description=
 			"Returns details of a single promotion specified by a promotion code. Requests pertaining to "
-					+ "promotions have been developed for the previous version of promotions and vouchers and therefore some of them are currently not compatible with the new promotion engine.", authorizations = {
-			@Authorization(value = "oauth2_client_credentials") })
+	+"promotions have been developed for the previous version of promotions and vouchers and therefore some of them are currently not compatible with the new promotion engine.",security=@SecurityRequirement(name="oauth2_client_credentials")
+
+	)
 	@ApiBaseSiteIdParam
 	public PromotionWsDTO getPromotion(
-			@ApiParam(value = "Promotion identifier (code)", required = true) @PathVariable final String code,
+			@Parameter(description = "Promotion identifier (code)", required = true)
+			@PathVariable
+			final String code,
 			@ApiFieldsParam(defaultValue = BASIC_FIELD_SET) @RequestParam(defaultValue = BASIC_FIELD_SET) final String fields)
 	{
 		final PromotionData promotionData = commercePromotionFacade.getPromotion(code, OPTIONS);

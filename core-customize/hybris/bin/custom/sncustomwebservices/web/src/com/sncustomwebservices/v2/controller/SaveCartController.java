@@ -20,9 +20,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 
 /**
@@ -30,7 +30,7 @@ import io.swagger.annotations.ApiParam;
  */
 @Controller
 @RequestMapping(value = "/{baseSiteId}/users/{userId}/carts")
-@Api(tags = "Save Cart")
+@Tag(name = "Save Cart")
 public class SaveCartController extends BaseCommerceController
 {
 	@Resource(name = "saveCartFacade")
@@ -38,12 +38,16 @@ public class SaveCartController extends BaseCommerceController
 
 	@RequestMapping(value = "/{cartId}/save", method = RequestMethod.PATCH)
 	@ResponseBody
-	@ApiOperation(nickname = "doSaveCart", value = "Explicitly saves a cart.", notes = "Explicitly saves a cart.")
+	@Operation(operationId = "doSaveCart", summary = "Explicitly saves a cart.", description = "Explicitly saves a cart.")
 	@ApiBaseSiteIdAndUserIdParam
 	public SaveCartResultWsDTO doSaveCart(
-			@ApiParam(value = "Cart identifier: cart code for logged in user, cart guid for anonymous user, 'current' for the last modified cart", required = true) @PathVariable final String cartId,
-			@ApiParam(value = "The name that should be applied to the saved cart.") @RequestParam(value = "saveCartName", required = false) final String saveCartName,
-			@ApiParam(value = "The description that should be applied to the saved cart.") @RequestParam(value = "saveCartDescription", required = false) final String saveCartDescription,
+			@Parameter(description = "Cart identifier: cart code for logged in user, cart guid for anonymous user, 'current' for the last modified cart", required = true)
+			@PathVariable
+			final String cartId, @Parameter(description = "The name that should be applied to the saved cart.")
+			@RequestParam(value = "saveCartName", required = false)
+			final String saveCartName, @Parameter(description = "The description that should be applied to the saved cart.")
+			@RequestParam(value = "saveCartDescription", required = false)
+			final String saveCartDescription,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields) throws CommerceSaveCartException
 	{
 		final CommerceSaveCartParameterData parameters = new CommerceSaveCartParameterData();
@@ -57,10 +61,12 @@ public class SaveCartController extends BaseCommerceController
 
 	@RequestMapping(value = "/{cartId}/restoresavedcart", method = RequestMethod.PATCH)
 	@ResponseBody
-	@ApiOperation(nickname = "doUpdateSavedCart", value = "Restore a saved cart.", notes = "Restore a saved cart.")
+	@Operation(operationId = "doUpdateSavedCart", summary = "Restore a saved cart.", description = "Restore a saved cart.")
 	@ApiBaseSiteIdAndUserIdParam
 	public SaveCartResultWsDTO doUpdateSavedCart(
-			@ApiParam(value = "Cart identifier: cart code for logged in user, cart guid for anonymous user, 'current' for the last modified cart", required = true) @PathVariable final String cartId,
+			@Parameter(description = "Cart identifier: cart code for logged in user, cart guid for anonymous user, 'current' for the last modified cart", required = true)
+			@PathVariable
+			final String cartId,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields) throws CommerceSaveCartException
 	{
 		final CommerceSaveCartParameterData parameters = new CommerceSaveCartParameterData();
@@ -75,12 +81,14 @@ public class SaveCartController extends BaseCommerceController
 
 	@RequestMapping(value = "/{cartId}/flagForDeletion", method = RequestMethod.PATCH)
 	@ResponseBody
-	@ApiOperation(nickname = "doUpdateFlagForDeletion", value = "Flag a cart for deletion.", notes =
+	@Operation(operationId = "doUpdateFlagForDeletion", summary = "Flag a cart for deletion.", description =
 			"Flags a cart for deletion (the cart doesn't have corresponding save cart attributes anymore). The cart is not "
 					+ "actually deleted from the database. But with the removal of the saved cart attributes, this cart will be taken care of by the cart removal job just like any other cart.")
 	@ApiBaseSiteIdAndUserIdParam
 	public SaveCartResultWsDTO doUpdateFlagForDeletion(
-			@ApiParam(value = "Cart identifier: cart code for logged in user, cart guid for anonymous user, 'current' for the last modified cart", required = true) @PathVariable final String cartId,
+			@Parameter(description = "Cart identifier: cart code for logged in user, cart guid for anonymous user, 'current' for the last modified cart", required = true)
+			@PathVariable
+			final String cartId,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields) throws CommerceSaveCartException
 	{
 		final CommerceSaveCartResultData result = saveCartFacade.flagForDeletion(cartId);
@@ -89,10 +97,12 @@ public class SaveCartController extends BaseCommerceController
 
 	@RequestMapping(value = "/{cartId}/savedcart", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(nickname = "getSavedCart", value = "Get a saved cart.", notes = "Returns a saved cart for an authenticated user. The cart is identified using the \"cartId\" parameter.")
+	@Operation(operationId = "getSavedCart", summary = "Get a saved cart.", description = "Returns a saved cart for an authenticated user. The cart is identified using the \"cartId\" parameter.")
 	@ApiBaseSiteIdAndUserIdParam
 	public SaveCartResultWsDTO getSavedCart(
-			@ApiParam(value = "Cart identifier: cart code for logged in user, cart guid for anonymous user, 'current' for the last modified cart", required = true) @PathVariable final String cartId,
+			@Parameter(description = "Cart identifier: cart code for logged in user, cart guid for anonymous user, 'current' for the last modified cart", required = true)
+			@PathVariable
+			final String cartId,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields) throws CommerceSaveCartException
 	{
 		final CommerceSaveCartParameterData parameters = new CommerceSaveCartParameterData();
@@ -104,12 +114,16 @@ public class SaveCartController extends BaseCommerceController
 
 	@RequestMapping(value = "/{cartId}/clonesavedcart", method = RequestMethod.POST)
 	@ResponseBody
-	@ApiOperation(nickname = "doCartClone", value = "Explicitly clones a cart.", notes = "Explicitly clones a cart.")
+	@Operation(operationId = "doCartClone", summary = "Explicitly clones a cart.", description = "Explicitly clones a cart.")
 	@ApiBaseSiteIdAndUserIdParam
 	public SaveCartResultWsDTO doCartClone(
-			@ApiParam(value = "Cart identifier: cart code for logged in user, cart guid for anonymous user, 'current' for the last modified cart", required = true) @PathVariable final String cartId,
-			@ApiParam(value = "The name that should be applied to the cloned cart.") @RequestParam(value = "name", required = false) final String name,
-			@ApiParam(value = "The description that should be applied to the cloned cart.") @RequestParam(value = "description", required = false) final String description,
+			@Parameter(description = "Cart identifier: cart code for logged in user, cart guid for anonymous user, 'current' for the last modified cart", required = true)
+			@PathVariable
+			final String cartId, @Parameter(description = "The name that should be applied to the cloned cart.")
+			@RequestParam(value = "name", required = false)
+			final String name, @Parameter(description = "The description that should be applied to the cloned cart.")
+			@RequestParam(value = "description", required = false)
+			final String description,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields) throws CommerceSaveCartException
 	{
 		final CommerceSaveCartParameterData parameters = new CommerceSaveCartParameterData();

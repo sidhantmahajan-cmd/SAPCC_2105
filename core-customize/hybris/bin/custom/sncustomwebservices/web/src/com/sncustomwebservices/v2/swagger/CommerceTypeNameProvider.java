@@ -8,7 +8,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import io.swagger.annotations.ApiModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 import springfox.documentation.schema.DefaultTypeNameProvider;
 import springfox.documentation.swagger.common.SwaggerPluginSupport;
 
@@ -22,9 +22,9 @@ public class CommerceTypeNameProvider extends DefaultTypeNameProvider
 	@Override
 	public String nameFor(final Class<?> type)
 	{
-		final ApiModel annotation = AnnotationUtils.findAnnotation(type, ApiModel.class);
+		final Schema annotation = AnnotationUtils.findAnnotation(type, Schema.class);
 		final String defaultTypeName = getDefaultTypeName(type);
-		return annotation != null ? StringUtils.defaultIfEmpty(annotation.value(), defaultTypeName) : defaultTypeName;
+		return annotation != null ? StringUtils.defaultIfEmpty(annotation.description(), defaultTypeName) : defaultTypeName;
 	}
 
 	private String getDefaultTypeName(final Class<?> type)

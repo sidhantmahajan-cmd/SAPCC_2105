@@ -14,13 +14,11 @@ import de.hybris.platform.webservicescommons.cache.CacheControl;
 import de.hybris.platform.webservicescommons.cache.CacheControlDirective;
 import de.hybris.platform.webservicescommons.swagger.ApiBaseSiteIdAndUserIdParam;
 import de.hybris.platform.webservicescommons.swagger.ApiFieldsParam;
-import com.sncustomwebservices.populator.options.PaymentInfoOption;
-import com.sncustomwebservices.swagger.ApiBaseSiteIdAndUserIdAndPaymentDetailsParams;
-
-import javax.servlet.http.HttpServletRequest;
 
 import java.util.ArrayList;
 import java.util.Collection;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,15 +34,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import com.sncustomwebservices.populator.options.PaymentInfoOption;
+import com.sncustomwebservices.swagger.ApiBaseSiteIdAndUserIdAndPaymentDetailsParams;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 
 @Controller
 @RequestMapping(value = "/{baseSiteId}/users/{userId}/paymentdetails")
 @CacheControl(directive = CacheControlDirective.PRIVATE)
-@Api(tags = "Payment Details")
+@Tag(name = "Payment Details")
 public class PaymentDetailsController extends BaseCommerceController
 {
 	private static final Logger LOG = LoggerFactory.getLogger(PaymentDetailsController.class);
@@ -54,10 +55,12 @@ public class PaymentDetailsController extends BaseCommerceController
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(nickname = "getPaymentDetailsList", value = "Get customer's credit card payment details list.", notes = "Return customer's credit card payment details list.")
+	@Operation(operationId = "getPaymentDetailsList", summary = "Get customer's credit card payment details list.", description = "Return customer's credit card payment details list.")
 	@ApiBaseSiteIdAndUserIdParam
 	public PaymentDetailsListWsDTO getPaymentDetailsList(
-			@ApiParam(value = "Type of payment details.") @RequestParam(defaultValue = "false") final boolean saved,
+			@Parameter(description = "Type of payment details.")
+			@RequestParam(defaultValue = "false")
+			final boolean saved,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
 		LOG.debug("getPaymentDetailsList");
@@ -71,10 +74,12 @@ public class PaymentDetailsController extends BaseCommerceController
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })
 	@RequestMapping(value = "/{paymentDetailsId}", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(nickname = "getPaymentDetails", value = "Get customer's credit card payment details.", notes = "Returns a customer's credit card payment details for the specified paymentDetailsId.")
+	@Operation(operationId = "getPaymentDetails", summary = "Get customer's credit card payment details.", description = "Returns a customer's credit card payment details for the specified paymentDetailsId.")
 	@ApiBaseSiteIdAndUserIdParam
 	public PaymentDetailsWsDTO getPaymentDetails(
-			@ApiParam(value = "Payment details identifier.", required = true) @PathVariable final String paymentDetailsId,
+			@Parameter(description = "Payment details identifier.", required = true)
+			@PathVariable
+			final String paymentDetailsId,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
 		return getDataMapper().map(getPaymentInfo(paymentDetailsId), PaymentDetailsWsDTO.class, fields);
@@ -102,11 +107,13 @@ public class PaymentDetailsController extends BaseCommerceController
 
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })
 	@RequestMapping(value = "/{paymentDetailsId}", method = RequestMethod.DELETE)
-	@ApiOperation(nickname = "removePaymentDetails", value = "Deletes customer's credit card payment details.", notes = "Deletes a customer's credit card payment details based on a specified paymentDetailsId.")
+	@Operation(operationId = "removePaymentDetails", summary = "Deletes customer's credit card payment details.", description = "Deletes a customer's credit card payment details based on a specified paymentDetailsId.")
 	@ApiBaseSiteIdAndUserIdParam
 	@ResponseStatus(HttpStatus.OK)
 	public void removePaymentDetails(
-			@ApiParam(value = "Payment details identifier.", required = true) @PathVariable final String paymentDetailsId)
+			@Parameter(description = "Payment details identifier.", required = true)
+			@PathVariable
+			final String paymentDetailsId)
 	{
 		LOG.debug("removePaymentDetails: id = {}", sanitize(paymentDetailsId));
 		getPaymentInfo(paymentDetailsId);
@@ -119,13 +126,15 @@ public class PaymentDetailsController extends BaseCommerceController
 	@Deprecated(since = "2005", forRemoval = true)
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })
 	@RequestMapping(value = "/{paymentDetailsId}", method = RequestMethod.PATCH)
-	@ApiOperation(hidden = true, value = "Updates existing customer's credit card payment details. ", notes =
+	@Operation(hidden = true, summary = "Updates existing customer's credit card payment details. ", description =
 			"Updates an existing customer's credit card payment "
 					+ "details based on the specified paymentDetailsId. Only those attributes provided in the request will be updated.")
 	@ApiBaseSiteIdAndUserIdAndPaymentDetailsParams
 	@ResponseStatus(HttpStatus.OK)
 	public void updatePaymentDetails(
-			@ApiParam(value = "Payment details identifier.", required = true) @PathVariable final String paymentDetailsId,
+			@Parameter(description = "Payment details identifier.", required = true)
+			@PathVariable
+			final String paymentDetailsId,
 			final HttpServletRequest request)
 	{
 		LOG.debug("updatePaymentDetails: id = {}", sanitize(paymentDetailsId));
@@ -150,14 +159,17 @@ public class PaymentDetailsController extends BaseCommerceController
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })
 	@RequestMapping(value = "/{paymentDetailsId}", method = RequestMethod.PATCH, consumes = { MediaType.APPLICATION_JSON_VALUE,
 			MediaType.APPLICATION_XML_VALUE })
-	@ApiOperation(nickname = "updatePaymentDetails", value = "Updates existing customer's credit card payment details.", notes =
+	@Operation(operationId = "updatePaymentDetails", summary = "Updates existing customer's credit card payment details.", description =
 			"Updates an existing customer's credit card payment details based "
 					+ "on the specified paymentDetailsId. Only those attributes provided in the request will be updated.")
 	@ApiBaseSiteIdAndUserIdParam
 	@ResponseStatus(HttpStatus.OK)
 	public void updatePaymentDetails(
-			@ApiParam(value = "Payment details identifier.", required = true) @PathVariable final String paymentDetailsId,
-			@ApiParam(value = "Payment details object", required = true) @RequestBody final PaymentDetailsWsDTO paymentDetails)
+			@Parameter(description = "Payment details identifier.", required = true)
+			@PathVariable
+			final String paymentDetailsId, @Parameter(description = "Payment details object", required = true)
+			@RequestBody
+			final PaymentDetailsWsDTO paymentDetails)
 	{
 		final CCPaymentInfoData paymentInfoData = getPaymentInfo(paymentDetailsId);
 		final boolean isAlreadyDefaultPaymentInfo = paymentInfoData.isDefaultPaymentInfo();
@@ -181,13 +193,15 @@ public class PaymentDetailsController extends BaseCommerceController
 	@Deprecated(since = "2005", forRemoval = true)
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })
 	@RequestMapping(value = "/{paymentDetailsId}", method = RequestMethod.PUT)
-	@ApiOperation(hidden = true, value = "Updates existing customer's credit card payment details. ", notes =
+	@Operation(hidden = true, summary = "Updates existing customer's credit card payment details. ", description =
 			"Updates existing customer's credit card payment "
 					+ "info based on the payment info ID. Attributes not given in request will be defined again (set to null or default).")
 	@ApiBaseSiteIdAndUserIdAndPaymentDetailsParams
 	@ResponseStatus(HttpStatus.OK)
 	public void replacePaymentDetails(
-			@ApiParam(value = "Payment details identifier.", required = true) @PathVariable final String paymentDetailsId,
+			@Parameter(description = "Payment details identifier.", required = true)
+			@PathVariable
+			final String paymentDetailsId,
 			final HttpServletRequest request)
 	{
 		LOG.debug("replacePaymentDetails: id = {}", sanitize(paymentDetailsId));
@@ -236,14 +250,17 @@ public class PaymentDetailsController extends BaseCommerceController
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })
 	@RequestMapping(value = "/{paymentDetailsId}", method = RequestMethod.PUT, consumes = { MediaType.APPLICATION_JSON_VALUE,
 			MediaType.APPLICATION_XML_VALUE })
-	@ApiOperation(nickname = "replacePaymentDetails", value = "Updates existing customer's credit card payment info.", notes =
+	@Operation(operationId = "replacePaymentDetails", summary = "Updates existing customer's credit card payment info.", description =
 			"Updates existing customer's credit card payment info based on the "
 					+ "payment info ID. Attributes not given in request will be defined again (set to null or default).")
 	@ApiBaseSiteIdAndUserIdParam
 	@ResponseStatus(HttpStatus.OK)
 	public void replacePaymentDetails(
-			@ApiParam(value = "Payment details identifier.", required = true) @PathVariable final String paymentDetailsId,
-			@ApiParam(value = "Payment details object.", required = true) @RequestBody final PaymentDetailsWsDTO paymentDetails)
+			@Parameter(description = "Payment details identifier.", required = true)
+			@PathVariable
+			final String paymentDetailsId, @Parameter(description = "Payment details object.", required = true)
+			@RequestBody
+			final PaymentDetailsWsDTO paymentDetails)
 	{
 		final CCPaymentInfoData paymentInfoData = getPaymentInfo(paymentDetailsId);
 		final boolean isAlreadyDefaultPaymentInfo = paymentInfoData.isDefaultPaymentInfo();

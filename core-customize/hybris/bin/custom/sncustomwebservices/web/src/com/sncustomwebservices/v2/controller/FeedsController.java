@@ -5,16 +5,12 @@ package com.sncustomwebservices.v2.controller;
 
 import de.hybris.platform.commercewebservicescommons.dto.queues.OrderStatusUpdateElementListWsDTO;
 import de.hybris.platform.webservicescommons.swagger.ApiFieldsParam;
-import com.sncustomwebservices.formatters.WsDateFormatter;
-import com.sncustomwebservices.queues.data.OrderStatusUpdateElementData;
-import com.sncustomwebservices.queues.data.OrderStatusUpdateElementDataList;
-import com.sncustomwebservices.queues.impl.OrderStatusUpdateQueue;
-
-import javax.annotation.Resource;
 
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+
+import javax.annotation.Resource;
 
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
@@ -24,15 +20,20 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.Authorization;
+import com.sncustomwebservices.formatters.WsDateFormatter;
+import com.sncustomwebservices.queues.data.OrderStatusUpdateElementData;
+import com.sncustomwebservices.queues.data.OrderStatusUpdateElementDataList;
+import com.sncustomwebservices.queues.impl.OrderStatusUpdateQueue;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 
 @Controller
 @RequestMapping(value = "/{baseSiteId}/feeds")
-@Api(tags = "Feeds")
+@Tag(name = "Feeds")
 public class FeedsController extends BaseController
 {
 	@Resource(name = "wsDateFormatter")
@@ -43,13 +44,16 @@ public class FeedsController extends BaseController
 	@Secured("ROLE_TRUSTED_CLIENT")
 	@RequestMapping(value = "/orders/statusfeed", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(nickname = "getOrderStatusFeed", value = "Get a list of orders with status updates.", notes =
+	@Operation(operationId="getOrderStatusFeed",summary="Get a list of orders with status updates.",description=
 			"Returns the orders that have changed status. Returns only the elements from the "
-					+ "current baseSite that have been updated after the provided timestamp.", authorizations = {
-			@Authorization(value = "oauth2_client_credentials") })
+	+"current baseSite that have been updated after the provided timestamp.",security=@SecurityRequirement(name="oauth2_client_credentials")
+	)
 	public OrderStatusUpdateElementListWsDTO getOrderStatusFeed(
-			@ApiParam(value = "Only items newer than the given parameter are retrieved. This parameter should be in ISO-8601 format (for example, 2018-01-09T16:28:45+0000).", required = true) @RequestParam final String timestamp,
-			@ApiParam(value = "Base site identifier", required = true) @PathVariable final String baseSiteId,
+			@Parameter(description = "Only items newer than the given parameter are retrieved. This parameter should be in ISO-8601 format (for example, 2018-01-09T16:28:45+0000).", required = true)
+			@RequestParam
+			final String timestamp, @Parameter(description = "Base site identifier", required = true)
+			@PathVariable
+			final String baseSiteId,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
 		final Date timestampDate = wsDateFormatter.toDate(timestamp);

@@ -12,12 +12,10 @@ import de.hybris.platform.webservicescommons.cache.CacheControl;
 import de.hybris.platform.webservicescommons.cache.CacheControlDirective;
 import de.hybris.platform.webservicescommons.swagger.ApiBaseSiteIdParam;
 import de.hybris.platform.webservicescommons.swagger.ApiFieldsParam;
-import com.sncustomwebservices.user.data.CountryDataList;
-import com.sncustomwebservices.user.data.RegionDataList;
-
-import javax.annotation.Resource;
 
 import java.util.Locale;
+
+import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
@@ -31,15 +29,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import com.sncustomwebservices.user.data.CountryDataList;
+import com.sncustomwebservices.user.data.RegionDataList;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 
 @Controller
 @RequestMapping(value = "/{baseSiteId}/countries")
 @CacheControl(directive = CacheControlDirective.PRIVATE, maxAge = 120)
-@Api(tags = "Countries")
+@Tag(name = "Countries")
 public class CountriesController extends BaseCommerceController
 {
 	@Resource(name = "i18NFacade")
@@ -51,12 +53,15 @@ public class CountriesController extends BaseCommerceController
 	@RequestMapping(method = RequestMethod.GET)
 	@Cacheable(value = "countriesCache", key = "T(de.hybris.platform.commercewebservicescommons.cache.CommerceCacheKeyGenerator).generateKey(false,false,'getCountries',#type,#fields)")
 	@ResponseBody
-	@ApiOperation(nickname = "getCountries", value = "Get a list of countries.", notes =
+	@Operation(operationId = "getCountries", summary = "Get a list of countries.", description =
 			"If the value of type equals to shipping, then return shipping countries. If the value of type equals to billing, then return billing countries."
 					+ " If the value of type is not given, return all countries. The list is sorted alphabetically.")
 	@ApiBaseSiteIdParam
 	public CountryListWsDTO getCountries(
-			@ApiParam(value = "The type of countries.", allowableValues = "SHIPPING,BILLING") @RequestParam(required = false) final String type,
+			@Parameter(description = "The type of countries.", schema = @Schema(allowableValues =
+			{ "SHIPPING,BILLING" }))
+			@RequestParam(required = false)
+			final String type,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
 		if (StringUtils.isNotBlank(type) && !CountryType.SHIPPING.toString().equalsIgnoreCase(type) && !CountryType.BILLING
@@ -74,10 +79,12 @@ public class CountriesController extends BaseCommerceController
 	@ResponseStatus(value = HttpStatus.OK)
 	@ResponseBody
 	@Cacheable(value = "countriesCache", key = "T(de.hybris.platform.commercewebservicescommons.cache.CommerceCacheKeyGenerator).generateKey(false,false,'getRegionsForCountry',#countyIsoCode,#fields)")
-	@ApiOperation(nickname = "getCountryRegions", value = "Fetch the list of regions for the provided country.", notes = "Lists all regions.")
+	@Operation(operationId = "getCountryRegions", summary = "Fetch the list of regions for the provided country.", description = "Lists all regions.")
 	@ApiBaseSiteIdParam
 	public RegionListWsDTO getCountryRegions(
-			@ApiParam(value = "An ISO code for a country", required = true) @PathVariable final String countyIsoCode,
+			@Parameter(description = "An ISO code for a country", required = true)
+			@PathVariable
+			final String countyIsoCode,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
 		final RegionDataList regionDataList = new RegionDataList();

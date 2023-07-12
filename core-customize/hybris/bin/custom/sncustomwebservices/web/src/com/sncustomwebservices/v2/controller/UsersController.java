@@ -21,15 +21,13 @@ import de.hybris.platform.webservicescommons.cache.CacheControlDirective;
 import de.hybris.platform.webservicescommons.swagger.ApiBaseSiteIdAndUserIdParam;
 import de.hybris.platform.webservicescommons.swagger.ApiBaseSiteIdParam;
 import de.hybris.platform.webservicescommons.swagger.ApiFieldsParam;
-import com.sncustomwebservices.constants.YcommercewebservicesConstants;
-import com.sncustomwebservices.populator.HttpRequestCustomerDataPopulator;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import java.nio.charset.StandardCharsets;
-import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
@@ -53,17 +51,21 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.UriUtils;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import com.sncustomwebservices.constants.YcommercewebservicesConstants;
+import com.sncustomwebservices.populator.HttpRequestCustomerDataPopulator;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 
 @Controller
 @RequestMapping(value = "/{baseSiteId}/users")
 @CacheControl(directive = CacheControlDirective.PRIVATE)
-@Api(tags = "Users")
+@Tag(name = "Users")
 public class UsersController extends BaseCommerceController
 {
 	private static final Logger LOG = LoggerFactory.getLogger(UsersController.class);
@@ -90,17 +92,25 @@ public class UsersController extends BaseCommerceController
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseStatus(value = HttpStatus.CREATED)
 	@ResponseBody
-	@ApiOperation(hidden = true, value = " Registers a customer", notes =
+	@Operation(hidden = true, summary = " Registers a customer", description =
 			"Registers a customer. There are two options for registering a customer. The first option requires "
 					+ "the following parameters: login, password, firstName, lastName, titleCode. The second option converts a guest to a customer. In this case, the required parameters are: guid, password.")
 	@ApiBaseSiteIdParam
 	public UserWsDTO createUser(
-			@ApiParam(value = "Customer's login. Customer login is case insensitive.") @RequestParam(required = false) final String login,
-			@ApiParam(value = "Customer's password.", required = true) @RequestParam final String password,
-			@ApiParam(value = "Customer's title code. For a list of codes, see /{baseSiteId}/titles resource") @RequestParam(required = false) final String titleCode,
-			@ApiParam(value = "Customer's first name.") @RequestParam(required = false) final String firstName,
-			@ApiParam(value = "Customer's last name.") @RequestParam(required = false) final String lastName,
-			@ApiParam(value = "Guest order's guid.") @RequestParam(required = false) final String guid,
+			@Parameter(description = "Customer's login. Customer login is case insensitive.")
+			@RequestParam(required = false)
+			final String login, @Parameter(description = "Customer's password.", required = true)
+			@RequestParam
+			final String password,
+			@Parameter(description = "Customer's title code. For a list of codes, see /{baseSiteId}/titles resource")
+			@RequestParam(required = false)
+			final String titleCode, @Parameter(description = "Customer's first name.")
+			@RequestParam(required = false)
+			final String firstName, @Parameter(description = "Customer's last name.")
+			@RequestParam(required = false)
+			final String lastName, @Parameter(description = "Guest order's guid.")
+			@RequestParam(required = false)
+			final String guid,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields,
 			final HttpServletRequest httpRequest, final HttpServletResponse httpResponse) throws DuplicateUidException
 	{
@@ -176,10 +186,12 @@ public class UsersController extends BaseCommerceController
 	@RequestMapping(method = RequestMethod.POST, consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
 	@ResponseStatus(value = HttpStatus.CREATED)
 	@ResponseBody
-	@ApiOperation(nickname = "createUser", value = " Registers a customer", notes = "Registers a customer. Requires the following "
+	@Operation(operationId = "createUser", summary = " Registers a customer", description = "Registers a customer. Requires the following "
 			+ "parameters: login, password, firstName, lastName, titleCode.")
 	@ApiBaseSiteIdParam
-	public UserWsDTO createUser(@ApiParam(value = "User's object.", required = true) @RequestBody final UserSignUpWsDTO user,
+	public UserWsDTO createUser(@Parameter(description = "User's object.", required = true)
+	@RequestBody
+	final UserSignUpWsDTO user,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields,
 			final HttpServletRequest httpRequest, final HttpServletResponse httpResponse)
 	{
@@ -228,7 +240,7 @@ public class UsersController extends BaseCommerceController
 	@RequestMapping(value = "/{userId}", method = RequestMethod.GET)
 	@ResponseBody
 	@SiteChannelRestriction(allowedSiteChannelsProperty = API_COMPATIBILITY_B2C_CHANNELS)
-	@ApiOperation(nickname = "getUser", value = "Get customer profile", notes = "Returns customer profile.")
+	@Operation(operationId = "getUser", summary = "Get customer profile", description = "Returns customer profile.")
 	@ApiBaseSiteIdAndUserIdParam
 	public UserWsDTO getUser(@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
@@ -243,15 +255,20 @@ public class UsersController extends BaseCommerceController
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })
 	@RequestMapping(value = "/{userId}", method = RequestMethod.PUT)
 	@ResponseStatus(HttpStatus.OK)
-	@ApiOperation(hidden = true, value = "Updates customer profile", notes = "Updates customer profile. Attributes not provided in the request body will be defined again (set to null or default).")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "baseSiteId", value = "Base site identifier", required = true, dataType = "String", paramType = "path"),
-			@ApiImplicitParam(name = "userId", value = "User identifier.", required = true, dataType = "String", paramType = "path"),
-			@ApiImplicitParam(name = "language", value = "Customer's language.", required = false, dataType = "String", paramType = "query"),
-			@ApiImplicitParam(name = "currency", value = "Customer's currency.", required = false, dataType = "String", paramType = "query") })
-	public void replaceUser(@ApiParam(value = "Customer's first name.", required = true) @RequestParam final String firstName,
-			@ApiParam(value = "Customer's last name.", required = true) @RequestParam final String lastName,
-			@ApiParam(value = "Customer's title code. For a list of codes, see /{baseSiteId}/titles resource", required = false) @RequestParam final String titleCode,
+	@Operation(hidden = true, summary = "Updates customer profile", description = "Updates customer profile. Attributes not provided in the request body will be defined again (set to null or default).")
+	@Parameters(
+	{ @Parameter(name = "baseSiteId", description = "Base site identifier", required = true, schema = @Schema(type = "string"), in = ParameterIn.PATH),
+			@Parameter(name = "userId", description = "User identifier.", required = true, schema = @Schema(type = "string"), in = ParameterIn.PATH),
+			@Parameter(name = "language", description = "Customer's language.", required = false, schema = @Schema(type = "string"), in = ParameterIn.QUERY),
+			@Parameter(name = "currency", description = "Customer's currency.", required = false, schema = @Schema(type = "string"), in = ParameterIn.QUERY) })
+	public void replaceUser(@Parameter(description = "Customer's first name.", required = true)
+	@RequestParam
+	final String firstName, @Parameter(description = "Customer's last name.", required = true)
+	@RequestParam
+	final String lastName,
+			@Parameter(description = "Customer's title code. For a list of codes, see /{baseSiteId}/titles resource", required = false)
+			@RequestParam
+			final String titleCode,
 			final HttpServletRequest request) throws DuplicateUidException
 	{
 		final CustomerData customer = customerFacade.getCurrentCustomer();
@@ -270,9 +287,11 @@ public class UsersController extends BaseCommerceController
 	@RequestMapping(value = "/{userId}", method = RequestMethod.PUT, consumes = { MediaType.APPLICATION_JSON_VALUE,
 			MediaType.APPLICATION_XML_VALUE })
 	@ResponseStatus(HttpStatus.OK)
-	@ApiOperation(nickname = "replaceUser", value = "Updates customer profile", notes = "Updates customer profile. Attributes not provided in the request body will be defined again (set to null or default).")
+	@Operation(operationId = "replaceUser", summary = "Updates customer profile", description = "Updates customer profile. Attributes not provided in the request body will be defined again (set to null or default).")
 	@ApiBaseSiteIdAndUserIdParam
-	public void replaceUser(@ApiParam(value = "User's object", required = true) @RequestBody final UserWsDTO user)
+	public void replaceUser(@Parameter(description = "User's object", required = true)
+	@RequestBody
+	final UserWsDTO user)
 			throws DuplicateUidException
 	{
 		validate(user, "user", putUserDTOValidator);
@@ -291,15 +310,15 @@ public class UsersController extends BaseCommerceController
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })
 	@RequestMapping(value = "/{userId}", method = RequestMethod.PATCH)
 	@ResponseStatus(HttpStatus.OK)
-	@ApiOperation(hidden = true, value = "Updates customer profile", notes = "Updates customer profile. Only attributes provided in the request body will be changed.")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "baseSiteId", value = "Base site identifier", required = true, dataType = "String", paramType = "path"),
-			@ApiImplicitParam(name = "userId", value = "User identifier", required = true, dataType = "String", paramType = "path"),
-			@ApiImplicitParam(name = "firstName", value = "Customer's first name", required = false, dataType = "String", paramType = "query"),
-			@ApiImplicitParam(name = "lastName", value = "Customer's last name", required = false, dataType = "String", paramType = "query"),
-			@ApiImplicitParam(name = "titleCode", value = "Customer's title code. Customer's title code. For a list of codes, see /{baseSiteId}/titles resource", required = false, dataType = "String", paramType = "query"),
-			@ApiImplicitParam(name = "language", value = "Customer's language", required = false, dataType = "String", paramType = "query"),
-			@ApiImplicitParam(name = "currency", value = "Customer's currency", required = false, dataType = "String", paramType = "query") })
+	@Operation(hidden = true, summary = "Updates customer profile", description = "Updates customer profile. Only attributes provided in the request body will be changed.")
+	@Parameters(
+	{ @Parameter(name = "baseSiteId", description = "Base site identifier", required = true, schema = @Schema(type = "string"), in = ParameterIn.PATH),
+			@Parameter(name = "userId", description = "User identifier", required = true, schema = @Schema(type = "string"), in = ParameterIn.PATH),
+			@Parameter(name = "firstName", description = "Customer's first name", required = false, schema = @Schema(type = "string"), in = ParameterIn.QUERY),
+			@Parameter(name = "lastName", description = "Customer's last name", required = false, schema = @Schema(type = "string"), in = ParameterIn.QUERY),
+			@Parameter(name = "titleCode", description = "Customer's title code. Customer's title code. For a list of codes, see /{baseSiteId}/titles resource", required = false, schema = @Schema(type = "string"), in = ParameterIn.QUERY),
+			@Parameter(name = "language", description = "Customer's language", required = false, schema = @Schema(type = "string"), in = ParameterIn.QUERY),
+			@Parameter(name = "currency", description = "Customer's currency", required = false, schema = @Schema(type = "string"), in = ParameterIn.QUERY) })
 	public void updateUser(final HttpServletRequest request) throws DuplicateUidException
 	{
 		final CustomerData customer = customerFacade.getCurrentCustomer();
@@ -312,9 +331,11 @@ public class UsersController extends BaseCommerceController
 	@RequestMapping(value = "/{userId}", method = RequestMethod.PATCH, consumes = { MediaType.APPLICATION_JSON_VALUE,
 			MediaType.APPLICATION_XML_VALUE })
 	@ResponseStatus(HttpStatus.OK)
-	@ApiOperation(nickname = "updateUser", value = "Updates customer profile", notes = "Updates customer profile. Only attributes provided in the request body will be changed.")
+	@Operation(operationId = "updateUser", summary = "Updates customer profile", description = "Updates customer profile. Only attributes provided in the request body will be changed.")
 	@ApiBaseSiteIdAndUserIdParam
-	public void updateUser(@ApiParam(value = "User's object.", required = true) @RequestBody final UserWsDTO user)
+	public void updateUser(@Parameter(description = "User's object.", required = true)
+	@RequestBody
+	final UserWsDTO user)
 			throws DuplicateUidException
 	{
 		final CustomerData customer = customerFacade.getCurrentCustomer();
@@ -327,7 +348,7 @@ public class UsersController extends BaseCommerceController
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })
 	@RequestMapping(value = "/{userId}", method = RequestMethod.DELETE)
 	@ResponseStatus(HttpStatus.OK)
-	@ApiOperation(nickname = "removeUser", value = "Delete customer profile.", notes = "Removes customer profile.")
+	@Operation(operationId = "removeUser", summary = "Delete customer profile.", description = "Removes customer profile.")
 	@ApiBaseSiteIdAndUserIdParam
 	public void removeUser()
 	{
@@ -338,11 +359,14 @@ public class UsersController extends BaseCommerceController
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })
 	@RequestMapping(value = "/{userId}/login", method = RequestMethod.PUT)
 	@ResponseStatus(HttpStatus.OK)
-	@ApiOperation(nickname = "replaceUserLogin", value = "Changes customer's login name.", notes = "Changes a customer's login name. Requires the customer's current password.")
+	@Operation(operationId = "replaceUserLogin", summary = "Changes customer's login name.", description = "Changes a customer's login name. Requires the customer's current password.")
 	@ApiBaseSiteIdAndUserIdParam
 	public void replaceUserLogin(
-			@ApiParam(value = "Customer's new login name. Customer login is case insensitive.", required = true) @RequestParam final String newLogin,
-			@ApiParam(value = "Customer's current password.", required = true) @RequestParam final String password)
+			@Parameter(description = "Customer's new login name. Customer login is case insensitive.", required = true)
+			@RequestParam
+			final String newLogin, @Parameter(description = "Customer's current password.", required = true)
+			@RequestParam
+			final String password)
 			throws DuplicateUidException
 	{
 		if (!EmailValidator.getInstance().isValid(newLogin))
@@ -356,11 +380,15 @@ public class UsersController extends BaseCommerceController
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })
 	@RequestMapping(value = "/{userId}/password", method = RequestMethod.PUT)
 	@ResponseStatus(value = HttpStatus.ACCEPTED)
-	@ApiOperation(nickname = "replaceUserPassword", value = "Changes customer's password", notes = "Changes customer's password.")
+	@Operation(operationId = "replaceUserPassword", summary = "Changes customer's password", description = "Changes customer's password.")
 	@ApiBaseSiteIdAndUserIdParam
-	public void replaceUserPassword(@ApiParam(value = "User identifier.", required = true) @PathVariable final String userId,
-			@ApiParam("Old password. Required only for ROLE_CUSTOMERGROUP") @RequestParam(required = false) final String old,
-			@ApiParam(value = "New password.", required = true) @RequestParam(value = "new") final String newPassword)
+	public void replaceUserPassword(@Parameter(description = "User identifier.", required = true)
+	@PathVariable
+	final String userId, @Parameter(description = "Old password. Required only for ROLE_CUSTOMERGROUP")
+	@RequestParam(required = false)
+	final String old, @Parameter(description = "New password.", required = true)
+	@RequestParam(value = "new")
+	final String newPassword)
 	{
 		final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		final UserSignUpWsDTO customer = new UserSignUpWsDTO();
@@ -394,11 +422,13 @@ public class UsersController extends BaseCommerceController
 
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })
 	@RequestMapping(value = "/{userId}/customergroups", method = RequestMethod.GET)
-	@ApiOperation(nickname = "getUserCustomerGroups", value = "Get all customer groups of a customer.", notes = "Returns all customer groups of a customer.")
+	@Operation(operationId = "getUserCustomerGroups", summary = "Get all customer groups of a customer.", description = "Returns all customer groups of a customer.")
 	@ApiBaseSiteIdAndUserIdParam
 	@ResponseBody
 	public UserGroupListWsDTO getUserCustomerGroups(
-			@ApiParam(value = "User identifier.", required = true) @PathVariable final String userId,
+			@Parameter(description = "User identifier.", required = true)
+			@PathVariable
+			final String userId,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
 		final UserGroupDataList userGroupDataList = new UserGroupDataList();

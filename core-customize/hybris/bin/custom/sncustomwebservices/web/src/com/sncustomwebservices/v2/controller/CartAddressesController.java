@@ -27,15 +27,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 
 @Controller
 @RequestMapping(value = "/{baseSiteId}/users/{userId}/carts")
 @CacheControl(directive = CacheControlDirective.NO_CACHE)
-@Api(tags = "Cart Addresses")
+@Tag(name = "Cart Addresses")
 public class CartAddressesController extends BaseCommerceController
 {
 	private static final Logger LOG = LoggerFactory.getLogger(CartAddressesController.class);
@@ -48,9 +48,10 @@ public class CartAddressesController extends BaseCommerceController
 			MediaType.APPLICATION_XML_VALUE })
 	@ResponseStatus(HttpStatus.CREATED)
 	@ResponseBody
-	@ApiOperation(nickname = "createCartDeliveryAddress", value = "Creates a delivery address for the cart.", notes = "Creates an address and assigns it to the cart as the delivery address.")
+	@Operation(operationId = "createCartDeliveryAddress", summary = "Creates a delivery address for the cart.", description = "Creates an address and assigns it to the cart as the delivery address.")
 	@ApiBaseSiteIdUserIdAndCartIdParam
-	public AddressWsDTO createCartDeliveryAddress(@ApiParam(value =
+	public AddressWsDTO createCartDeliveryAddress(
+			@Parameter(description =
 			"Request body parameter that contains details such as the customer's first name (firstName), the customer's last name (lastName), the customer's title (titleCode), the customer's phone (phone), "
 					+ "the country (country.isocode), the first part of the address (line1), the second part of the address (line2), the town (town), the postal code (postalCode), and the region (region.isocode).\n\nThe DTO is in XML or .json format.", required = true) @RequestBody final AddressWsDTO address,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
@@ -67,10 +68,12 @@ public class CartAddressesController extends BaseCommerceController
 	@PutMapping(value = "/{cartId}/addresses/delivery")
 	@ResponseStatus(HttpStatus.OK)
 	@SiteChannelRestriction(allowedSiteChannelsProperty = API_COMPATIBILITY_B2C_CHANNELS)
-	@ApiOperation(nickname = "replaceCartDeliveryAddress", value = "Sets a delivery address for the cart.", notes = "Sets a delivery address for the cart. The address country must be placed among the delivery countries of the current base store.")
+	@Operation(operationId = "replaceCartDeliveryAddress", summary = "Sets a delivery address for the cart.", description = "Sets a delivery address for the cart. The address country must be placed among the delivery countries of the current base store.")
 	@ApiBaseSiteIdUserIdAndCartIdParam
 	public void replaceCartDeliveryAddress(
-			@ApiParam(value = "Address identifier", required = true) @RequestParam final String addressId)
+			@Parameter(description = "Address identifier", required = true)
+			@RequestParam
+			final String addressId)
 	{
 		setCartDeliveryAddressInternal(addressId);
 	}
@@ -78,7 +81,7 @@ public class CartAddressesController extends BaseCommerceController
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_GUEST", "ROLE_CUSTOMERMANAGERGROUP", "ROLE_TRUSTED_CLIENT" })
 	@DeleteMapping(value = "/{cartId}/addresses/delivery")
 	@ResponseStatus(HttpStatus.OK)
-	@ApiOperation(nickname = "removeCartDeliveryAddress", value = "Deletes the delivery address from the cart.", notes = "Deletes the delivery address from the cart.")
+	@Operation(operationId = "removeCartDeliveryAddress", summary = "Deletes the delivery address from the cart.", description = "Deletes the delivery address from the cart.")
 	@ApiBaseSiteIdUserIdAndCartIdParam
 	public void removeCartDeliveryAddress()
 	{

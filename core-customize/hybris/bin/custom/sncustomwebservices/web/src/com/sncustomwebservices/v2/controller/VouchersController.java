@@ -19,15 +19,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.Authorization;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 
 @Controller
 @RequestMapping(value = "/{baseSiteId}/vouchers")
-@Api(tags = "Vouchers")
+@Tag(name = "Vouchers")
 public class VouchersController extends BaseController
 {
 	@Resource(name = "voucherFacade")
@@ -36,10 +36,12 @@ public class VouchersController extends BaseController
 	@Secured("ROLE_TRUSTED_CLIENT")
 	@RequestMapping(value = "/{code}", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(nickname = "getVoucher", value = "Get a voucher based on code.", notes = "Returns details of a single voucher that is specified by its voucher identification code.", authorizations = {
-			@Authorization(value = "oauth2_client_credentials") })
+	@Operation(operationId="getVoucher",summary="Get a voucher based on code.",description="Returns details of a single voucher that is specified by its voucher identification code.",security=@SecurityRequirement(name="oauth2_client_credentials")
+	)
 	@ApiBaseSiteIdParam
-	public VoucherWsDTO getVoucher(@ApiParam(value = "Voucher identifier (code)", required = true) @PathVariable final String code,
+	public VoucherWsDTO getVoucher(@Parameter(description = "Voucher identifier (code)", required = true)
+	@PathVariable
+	final String code,
 			@ApiFieldsParam(defaultValue = BASIC_FIELD_SET) @RequestParam(defaultValue = BASIC_FIELD_SET) final String fields)
 			throws VoucherOperationException
 	{

@@ -3,6 +3,8 @@
  */
 package com.sncustomwebservices.v2.controller;
 
+import static java.util.stream.Collectors.toSet;
+
 import de.hybris.platform.commercefacades.catalog.PageOption;
 import de.hybris.platform.commercefacades.customergroups.CustomerGroupFacade;
 import de.hybris.platform.commercefacades.user.UserFacade;
@@ -19,8 +21,6 @@ import de.hybris.platform.servicelayer.exceptions.UnknownIdentifierException;
 import de.hybris.platform.webservicescommons.swagger.ApiBaseSiteIdParam;
 import de.hybris.platform.webservicescommons.swagger.ApiFieldsParam;
 
-import javax.annotation.Resource;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
+
+import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,11 +48,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-
-import static java.util.stream.Collectors.toSet;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 
 /**
@@ -58,7 +58,7 @@ import static java.util.stream.Collectors.toSet;
  */
 @Controller
 @RequestMapping(value = "/{baseSiteId}/customergroups")
-@Api(tags = "Customer Groups")
+@Tag(name = "Customer Groups")
 public class CustomerGroupsController extends BaseController
 {
 	private static final Logger LOG = LoggerFactory.getLogger(CustomerGroupsController.class);
@@ -82,13 +82,16 @@ public class CustomerGroupsController extends BaseController
 	@ResponseStatus(value = HttpStatus.CREATED)
 	@RequestMapping(method = RequestMethod.POST)
 	@Secured("ROLE_CUSTOMERMANAGERGROUP")
-	@ApiOperation(hidden = true, value = "Creates a new customer group.", notes =
+	@Operation(hidden = true, summary = "Creates a new customer group.", description =
 			"Creates a new customer group that is a direct subgroup of a customergroup.\n\nTo try out the methods of "
 					+ "the Customer Groups controller, you must authorize a user who belongs to the “customermanagergroup”.")
 	@ApiBaseSiteIdParam
 	public void createCustomerGroup(
-			@ApiParam(value = "Id of new customer group.", required = true) @RequestParam final String groupId,
-			@ApiParam(value = "Name in current locale.") @RequestParam(required = false) final String localizedName)
+			@Parameter(description = "Id of new customer group.", required = true)
+			@RequestParam
+			final String groupId, @Parameter(description = "Name in current locale.")
+			@RequestParam(required = false)
+			final String localizedName)
 	{
 		customerGroupFacade.createCustomerGroup(groupId, localizedName);
 	}
@@ -96,12 +99,14 @@ public class CustomerGroupsController extends BaseController
 	@ResponseStatus(value = HttpStatus.CREATED)
 	@RequestMapping(method = RequestMethod.POST, consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
 	@Secured("ROLE_CUSTOMERMANAGERGROUP")
-	@ApiOperation(nickname = "createCustomerGroup", value = "Creates a new customer group.", notes =
+	@Operation(operationId = "createCustomerGroup", summary = "Creates a new customer group.", description =
 			"Creates a new customer group that is a direct subgroup of a customergroup.\n\nTo try out the methods of the Customer "
 					+ "Groups controller, you must authorize a user who belongs to the “customermanagergroup”.")
 	@ApiBaseSiteIdParam
 	public void createCustomerGroup(
-			@ApiParam(value = "User group object with id and name.", required = true) @RequestBody final UserGroupWsDTO userGroup)
+			@Parameter(description = "User group object with id and name.", required = true)
+			@RequestBody
+			final UserGroupWsDTO userGroup)
 	{
 		validate(userGroup, "userGroup", userGroupDTOValidator);
 
@@ -122,13 +127,17 @@ public class CustomerGroupsController extends BaseController
 	@RequestMapping(value = "/{groupId}/members", method = RequestMethod.PATCH)
 	@Secured("ROLE_CUSTOMERMANAGERGROUP")
 	@ResponseStatus(value = HttpStatus.OK)
-	@ApiOperation(hidden = true, value = "List of users to assign to customer group.", notes =
+	@Operation(hidden = true, summary = "List of users to assign to customer group.", description =
 			"Assigns user(s) to a customer group.\n\nTo try out the methods of the Customer Groups "
 					+ "controller, you must authorize a user who belongs to the “customermanagergroup”.")
 	@ApiBaseSiteIdParam
 	public void updateCustomerGroupWithUsers(
-			@ApiParam(value = "Group identifier.", required = true) @PathVariable final String groupId,
-			@ApiParam(value = "List of users ids to assign to customer group. List should be in form: members=uid1&members=uid2...", required = true) @RequestParam(value = "members") final List<String> members)
+			@Parameter(description = "Group identifier.", required = true)
+			@PathVariable
+			final String groupId,
+			@Parameter(description = "List of users ids to assign to customer group. List should be in form: members=uid1&members=uid2...", required = true)
+			@RequestParam(value = "members")
+			final List<String> members)
 	{
 		checkIfAllUsersExist(members, userId -> createOperationErrorMessage("add", groupId, userId));
 		members.forEach(id -> customerGroupFacade.addUserToCustomerGroup(groupId, id));
@@ -138,13 +147,16 @@ public class CustomerGroupsController extends BaseController
 			MediaType.APPLICATION_XML_VALUE })
 	@Secured("ROLE_CUSTOMERMANAGERGROUP")
 	@ResponseStatus(value = HttpStatus.OK)
-	@ApiOperation(nickname = "updateCustomerGroupWithUsers", value = "Assigns user(s) to a customer group.", notes =
+	@Operation(operationId = "updateCustomerGroupWithUsers", summary = "Assigns user(s) to a customer group.", description =
 			"Assigns user(s) to a customer group.\n\nTo try out the methods of the Customer Groups controller, you must "
 					+ "authorize a user who belongs to the “customermanagergroup”.")
 	@ApiBaseSiteIdParam
 	public void updateCustomerGroupWithUsers(
-			@ApiParam(value = "Group identifier.", required = true) @PathVariable final String groupId,
-			@ApiParam(value = "List of users to assign to customer group.", required = true) @RequestBody final MemberListWsDTO members)
+			@Parameter(description = "Group identifier.", required = true)
+			@PathVariable
+			final String groupId, @Parameter(description = "List of users to assign to customer group.", required = true)
+			@RequestBody
+			final MemberListWsDTO members)
 	{
 		validate(members.getMembers(), "members", principalListDTOValidator);
 		members.getMembers().forEach(member -> customerGroupFacade.addUserToCustomerGroup(groupId, member.getUid()));
@@ -157,13 +169,17 @@ public class CustomerGroupsController extends BaseController
 	@RequestMapping(value = "/{groupId}/members", method = RequestMethod.PUT)
 	@Secured("ROLE_CUSTOMERMANAGERGROUP")
 	@ResponseStatus(value = HttpStatus.OK)
-	@ApiOperation(hidden = true, value = "List of users to set for customer group.", notes =
+	@Operation(hidden = true, summary = "List of users to set for customer group.", description =
 			"Sets members for a user group. The list of existing members is overwritten with a new one.\n\nTo "
 					+ "try out the methods of the Customer Groups controller, you must authorize a user who belongs to the “customermanagergroup”.")
 	@ApiBaseSiteIdParam
 	public void replaceUserListForCustomerGroup(
-			@ApiParam(value = "Group identifier.", required = true) @PathVariable final String groupId,
-			@ApiParam(value = "List of users ids to assign to customer group. List should be in form: members=uid1&members=uid2...") @RequestParam(required = false, value = "members") final List<String> members)
+			@Parameter(description = "Group identifier.", required = true)
+			@PathVariable
+			final String groupId,
+			@Parameter(description = "List of users ids to assign to customer group. List should be in form: members=uid1&members=uid2...")
+			@RequestParam(required = false, value = "members")
+			final List<String> members)
 	{
 		setUserListForCustomerGroupInternal(groupId, members);
 	}
@@ -226,13 +242,16 @@ public class CustomerGroupsController extends BaseController
 			MediaType.APPLICATION_XML_VALUE })
 	@Secured("ROLE_CUSTOMERMANAGERGROUP")
 	@ResponseStatus(value = HttpStatus.OK)
-	@ApiOperation(nickname = "replaceUsersForCustomerGroup", value = "Sets members for a user group.", notes =
+	@Operation(operationId = "replaceUsersForCustomerGroup", summary = "Sets members for a user group.", description =
 			"Sets members for a user group. The list of existing members is overwritten with a new one.\n\nTo try out the methods "
 					+ "of the Customer Groups controller, you must authorize a user who belongs to the “customermanagergroup”.")
 	@ApiBaseSiteIdParam
 	public void replaceUsersForCustomerGroup(
-			@ApiParam(value = "Group identifier.", required = true) @PathVariable final String groupId,
-			@ApiParam(value = "List of users to set for customer group.", required = true) @RequestBody final MemberListWsDTO members)
+			@Parameter(description = "Group identifier.", required = true)
+			@PathVariable
+			final String groupId, @Parameter(description = "List of users to set for customer group.", required = true)
+			@RequestBody
+			final MemberListWsDTO members)
 	{
 		final List<String> membersIds = new ArrayList<>();
 		if (members.getMembers() != null)
@@ -253,13 +272,16 @@ public class CustomerGroupsController extends BaseController
 	@RequestMapping(value = "/{groupId}/members/{userId:.*}", method = RequestMethod.DELETE)
 	@Secured("ROLE_CUSTOMERMANAGERGROUP")
 	@ResponseStatus(value = HttpStatus.OK)
-	@ApiOperation(nickname = "removeUsersFromCustomerGroup", value = "Deletes a user from a customer group.", notes =
+	@Operation(operationId = "removeUsersFromCustomerGroup", summary = "Deletes a user from a customer group.", description =
 			"Deletes user from a customer group.\n\nTo try out the methods of the Customer Groups controller, you must "
 					+ "authorize a user who belongs to the “customermanagergroup”.")
 	@ApiBaseSiteIdParam
 	public void removeUsersFromCustomerGroup(
-			@ApiParam(value = "Group identifier.", required = true) @PathVariable final String groupId,
-			@ApiParam(value = "User identifier.", required = true) @PathVariable(value = "userId") final String userId)
+			@Parameter(description = "Group identifier.", required = true)
+			@PathVariable
+			final String groupId, @Parameter(description = "User identifier.", required = true)
+			@PathVariable(value = "userId")
+			final String userId)
 	{
 		checkIfUserExist(userId, id -> createOperationErrorMessage(REMOVE_OPERATION_MESSAGE, groupId, userId));
 		customerGroupFacade.removeUserFromCustomerGroup(groupId, userId);
@@ -269,13 +291,16 @@ public class CustomerGroupsController extends BaseController
 	@Secured("ROLE_CUSTOMERMANAGERGROUP")
 	@ResponseStatus(value = HttpStatus.OK)
 	@ResponseBody
-	@ApiOperation(nickname = "getCustomerGroups", value = "Get all subgroups of a customergroup.", notes =
+	@Operation(operationId = "getCustomerGroups", summary = "Get all subgroups of a customergroup.", description =
 			"Returns all customer groups that are direct subgroups of a customergroup.\n\nTo try out the methods of the "
 					+ "Customer Groups controller, you must authorize a user who belongs to the “customermanagergroup”.")
 	@ApiBaseSiteIdParam
 	public UserGroupListWsDTO getCustomerGroups(
-			@ApiParam(value = "Current page number (starts with 0).") @RequestParam(defaultValue = DEFAULT_CURRENT_PAGE) final int currentPage,
-			@ApiParam(value = "Number of customer group returned in one page.") @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) final int pageSize,
+			@Parameter(description = "Current page number (starts with 0).")
+			@RequestParam(defaultValue = DEFAULT_CURRENT_PAGE)
+			final int currentPage, @Parameter(description = "Number of customer group returned in one page.")
+			@RequestParam(defaultValue = DEFAULT_PAGE_SIZE)
+			final int pageSize,
 			@ApiFieldsParam(defaultValue = BASIC_FIELD_SET) @RequestParam(defaultValue = BASIC_FIELD_SET) final String fields)
 	{
 		final PageOption pageOption = PageOption.createForPageNumberAndPageSize(currentPage, pageSize);
@@ -287,12 +312,14 @@ public class CustomerGroupsController extends BaseController
 	@Secured("ROLE_CUSTOMERMANAGERGROUP")
 	@ResponseStatus(value = HttpStatus.OK)
 	@ResponseBody
-	@ApiOperation(nickname = "getCustomerGroup", value = "Get a specific customer group.", notes =
+	@Operation(operationId = "getCustomerGroup", summary = "Get a specific customer group.", description =
 			"Returns a customer group with a specific groupId.\n\nTo try out the methods of the Customer Groups controller, you "
 					+ "must authorize a user who belongs to the “customermanagergroup”.")
 	@ApiBaseSiteIdParam
 	public UserGroupWsDTO getCustomerGroup(
-			@ApiParam(value = "Group identifier.", required = true) @PathVariable final String groupId,
+			@Parameter(description = "Group identifier.", required = true)
+			@PathVariable
+			final String groupId,
 			@ApiFieldsParam(defaultValue = BASIC_FIELD_SET) @RequestParam(defaultValue = BASIC_FIELD_SET) final String fields)
 	{
 		final UserGroupData userGroupData = customerGroupFacade.getCustomerGroup(groupId, OPTIONS);

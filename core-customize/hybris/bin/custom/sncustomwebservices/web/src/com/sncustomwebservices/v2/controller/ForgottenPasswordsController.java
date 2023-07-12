@@ -25,16 +25,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.Authorization;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 
 @Controller
 @RequestMapping(value = "/{baseSiteId}")
 @CacheControl(directive = CacheControlDirective.NO_STORE)
-@Api(tags = "Forgotten Passwords")
+@Tag(name = "Forgotten Passwords")
 public class ForgottenPasswordsController extends BaseController
 {
 	private static final Logger LOG = LoggerFactory.getLogger(ForgottenPasswordsController.class);
@@ -45,11 +45,12 @@ public class ForgottenPasswordsController extends BaseController
 	@Secured({ "ROLE_CLIENT", "ROLE_TRUSTED_CLIENT" })
 	@RequestMapping(value = "/forgottenpasswordtokens", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	@ApiOperation(nickname = "doRestorePassword", value = "Generates a token to restore a customer's forgotten password.", notes = "Generates a token to restore a customer's forgotten password.", authorizations = {
-			@Authorization(value = "oauth2_client_credentials") })
+	@Operation(operationId = "doRestorePassword", summary = "Generates a token to restore a customer's forgotten password.", description = "Generates a token to restore a customer's forgotten password.", security = @SecurityRequirement(name = "oauth2_client_credentials"))
 	@ApiBaseSiteIdParam
 	public void doRestorePassword(
-			@ApiParam(value = "Customer's user id. Customer user id is case insensitive.", required = true) @RequestParam final String userId)
+			@Parameter(description = "Customer's user id. Customer user id is case insensitive.", required = true)
+			@RequestParam
+			final String userId)
 	{
 		LOG.debug("doRestorePassword: user unique property: {}", sanitize(userId));
 		try
@@ -66,11 +67,12 @@ public class ForgottenPasswordsController extends BaseController
 	@RequestMapping(value = "/resetpassword", method = RequestMethod.POST, consumes = { MediaType.APPLICATION_JSON_VALUE,
 			MediaType.APPLICATION_XML_VALUE })
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	@ApiOperation(nickname = "doResetPassword", value = "Reset password after customer's clicked forgotten password link.", notes = "Reset password after customer's clicked forgotten password link.", authorizations = {
-			@Authorization(value = "oauth2_client_credentials") })
+	@Operation(operationId = "doResetPassword", summary = "Reset password after customer's clicked forgotten password link.", description = "Reset password after customer's clicked forgotten password link.", security = @SecurityRequirement(name = "oauth2_client_credentials"))
 	@ApiBaseSiteIdParam
 	public void doResetPassword(
-			@ApiParam(value = "Request body parameter that contains details such as token and new password", required = true) @RequestBody final ResetPasswordWsDTO resetPassword)
+			@Parameter(description = "Request body parameter that contains details such as token and new password", required = true)
+			@RequestBody
+			final ResetPasswordWsDTO resetPassword)
 			throws TokenInvalidatedException
 	{
 		LOG.debug("Executing method doResetPassword");

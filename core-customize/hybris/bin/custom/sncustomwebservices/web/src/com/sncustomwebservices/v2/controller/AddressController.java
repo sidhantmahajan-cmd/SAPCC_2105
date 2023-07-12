@@ -20,15 +20,12 @@ import de.hybris.platform.webservicescommons.dto.error.ErrorWsDTO;
 import de.hybris.platform.webservicescommons.errors.exceptions.WebserviceValidationException;
 import de.hybris.platform.webservicescommons.swagger.ApiBaseSiteIdAndUserIdParam;
 import de.hybris.platform.webservicescommons.swagger.ApiFieldsParam;
-import com.sncustomwebservices.swagger.ApiBaseSiteIdAndUserIdAndAddressParams;
-import com.sncustomwebservices.user.data.AddressDataList;
-import com.sncustomwebservices.validation.data.AddressValidationData;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,18 +43,25 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
+import com.sncustomwebservices.swagger.ApiBaseSiteIdAndUserIdAndAddressParams;
+import com.sncustomwebservices.user.data.AddressDataList;
+import com.sncustomwebservices.validation.data.AddressValidationData;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+
 
 
 @Controller
 @RequestMapping(value = "/{baseSiteId}/users/{userId}/addresses")
 @CacheControl(directive = CacheControlDirective.PRIVATE)
-@Api(tags = "Address")
+@Tag(name = "Address")
 public class AddressController extends BaseCommerceController
 {
 	public static final String ADDRESS_DOES_NOT_EXIST = "Address with given id: '%s' doesn't exist or belong to another user";
@@ -78,9 +82,9 @@ public class AddressController extends BaseCommerceController
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(nickname = "getAddresses", value = "Get customer's addresses", notes = "Returns customer's addresses.")
+	@Operation(operationId = "getAddresses", summary = "Get customer's addresses", description = "Returns customer's addresses.")
 	@ApiBaseSiteIdAndUserIdParam
-	@ApiResponse(code = 200, message = "List of customer's addresses")
+	@ApiResponse(responseCode = "200", description = "List of customer's addresses")
 	public AddressListWsDTO getAddresses(@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
 		final List<AddressData> addressList = getUserFacade().getAddressBook();
@@ -97,22 +101,22 @@ public class AddressController extends BaseCommerceController
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
 	@ResponseStatus(value = HttpStatus.CREATED)
-	@ApiOperation(hidden = true, value = "Creates a new address.", notes = "Creates a new address.")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "baseSiteId", value = "Base site identifier", required = true, dataType = "String", paramType = "path"),
-			@ApiImplicitParam(name = "userId", value = "User identifier", required = true, dataType = "String", paramType = "path"),
-			@ApiImplicitParam(name = "firstName", value = "Customer's first name", required = true, dataType = "String", paramType = "query"),
-			@ApiImplicitParam(name = "lastName", value = "Customer's last name", required = true, dataType = "String", paramType = "query"),
-			@ApiImplicitParam(name = "email", value = "Customer's email", dataType = "String", paramType = "query"),
-			@ApiImplicitParam(name = "titleCode", value = "Customer's title code. Customer's title code. For a list of codes, see /{baseSiteId}/titles resource", required = false, dataType = "String", paramType = "query"),
-			@ApiImplicitParam(name = "country.isocode", value = "Country isocode. This parameter is required and have influence on how rest of parameters are validated (e.g. if parameters are required : line1,line2,town,postalCode,region.isocode)", required = true, dataType = "String", paramType = "query"),
-			@ApiImplicitParam(name = "line1", value = "First part of address. If this parameter is required depends on country (usually it is required).", required = false, dataType = "String", paramType = "query"),
-			@ApiImplicitParam(name = "line2", value = "Second part of address. If this parameter is required depends on country (usually it is not required)", required = false, dataType = "String", paramType = "query"),
-			@ApiImplicitParam(name = "town", value = "Town name or city isocode. If this parameter is required depends on country (usually it is required)", required = false, dataType = "String", paramType = "query"),
-			@ApiImplicitParam(name = "postalCode", value = "Postal code. Isocode for region. If this parameter is required depends on country.", required = false, dataType = "String", paramType = "query"),
-			@ApiImplicitParam(name = "region.isocode", value = "Second part of address. If this parameter is required depends on country (usually it is not required)", required = false, dataType = "String", paramType = "query"),
-			@ApiImplicitParam(name = "district", value = "District isocode. If this parameter is required depends on country (usually it is required)", required = false, dataType = "String", paramType = "query"),
-			@ApiImplicitParam(name = "cellphone", value = "Cellphone number. If this parameter is required depends on country (usually it is required)", required = false, dataType = "String", paramType = "query") })
+	@Operation(hidden = true, operationId = "Creates a new address.", summary = "Creates a new address.")
+	@Parameters(
+	{ @Parameter(name = "baseSiteId", description = "Base site identifier", required = true, schema = @Schema(type = "string"), in = ParameterIn.PATH),
+			@Parameter(name = "userId", description = "User identifier", required = true, schema = @Schema(type = "string"), in = ParameterIn.PATH),
+			@Parameter(name = "firstName", description = "Customer's first name", required = true, schema = @Schema(type = "string"), in = ParameterIn.QUERY),
+			@Parameter(name = "lastName", description = "Customer's last name", required = true, schema = @Schema(type = "string"), in = ParameterIn.QUERY),
+			@Parameter(name = "email", description = "Customer's email", schema = @Schema(type = "string"), in = ParameterIn.QUERY),
+			@Parameter(name = "titleCode", description = "Customer's title code. Customer's title code. For a list of codes, see /{baseSiteId}/titles resource", required = false, schema = @Schema(type = "string"), in = ParameterIn.QUERY),
+			@Parameter(name = "country.isocode", description = "Country isocode. This parameter is required and have influence on how rest of parameters are validated (e.g. if parameters are required : line1,line2,town,postalCode,region.isocode)", required = true, schema = @Schema(type = "string"), in = ParameterIn.QUERY),
+			@Parameter(name = "line1", description = "First part of address. If this parameter is required depends on country (usually it is required).", required = false, schema = @Schema(type = "string"), in = ParameterIn.QUERY),
+			@Parameter(name = "line2", description = "Second part of address. If this parameter is required depends on country (usually it is not required)", required = false, schema = @Schema(type = "string"), in = ParameterIn.QUERY),
+			@Parameter(name = "town", description = "Town name or city isocode. If this parameter is required depends on country (usually it is required)", required = false, schema = @Schema(type = "string"), in = ParameterIn.QUERY),
+			@Parameter(name = "postalCode", description = "Postal code. Isocode for region. If this parameter is required depends on country.", required = false, schema = @Schema(type = "string"), in = ParameterIn.QUERY),
+			@Parameter(name = "region.isocode", description = "Second part of address. If this parameter is required depends on country (usually it is not required)", required = false, schema = @Schema(type = "string"), in = ParameterIn.QUERY),
+			@Parameter(name = "district", description = "District isocode. If this parameter is required depends on country (usually it is required)", required = false, schema = @Schema(type = "string"), in = ParameterIn.QUERY),
+			@Parameter(name = "cellphone", description = "Cellphone number. If this parameter is required depends on country (usually it is required)", required = false, schema = @Schema(type = "string"), in = ParameterIn.QUERY) })
 	public AddressWsDTO createAddress(final HttpServletRequest request,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
@@ -124,10 +128,12 @@ public class AddressController extends BaseCommerceController
 	@RequestMapping(method = RequestMethod.POST, consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
 	@ResponseBody
 	@ResponseStatus(value = HttpStatus.CREATED)
-	@ApiOperation(nickname = "createAddress", value = "Creates a new address.", notes = "Creates a new address.")
+	@Operation(operationId = "createAddress", summary = "Creates a new address.", description = "Creates a new address.")
 	@ApiBaseSiteIdAndUserIdParam
 	public AddressWsDTO createAddress(
-			@ApiParam(value = "Address object.", required = true) @RequestBody final AddressWsDTO address,
+			@Parameter(description = "Address object.", required = true)
+			@RequestBody
+			final AddressWsDTO address,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
 		validate(address, OBJECT_NAME_ADDRESS, getAddressDTOValidator());
@@ -147,9 +153,11 @@ public class AddressController extends BaseCommerceController
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })
 	@RequestMapping(value = "/{addressId}", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(nickname = "getAddress", value = "Get info about address", notes = "Returns detailed information about address with a given id.")
+	@Operation(operationId = "getAddress", summary = "Get info about address", description = "Returns detailed information about address with a given id.")
 	@ApiBaseSiteIdAndUserIdParam
-	public AddressWsDTO getAddress(@ApiParam(value = "Address identifier.", required = true) @PathVariable final String addressId,
+	public AddressWsDTO getAddress(@Parameter(description = "Address identifier.", required = true)
+	@PathVariable
+	final String addressId,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
 		LOG.debug("getAddress: id={}", sanitize(addressId));
@@ -164,9 +172,11 @@ public class AddressController extends BaseCommerceController
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })
 	@RequestMapping(value = "/{addressId}", method = RequestMethod.PUT)
 	@ResponseStatus(HttpStatus.OK)
-	@ApiOperation(hidden = true, value = "Updates the address", notes = "Updates the address. Attributes not provided in the request will be defined again (set to null or default).")
+	@Operation(hidden = true, summary = "Updates the address", description = "Updates the address. Attributes not provided in the request will be defined again (set to null or default).")
 	@ApiBaseSiteIdAndUserIdAndAddressParams
-	public void replaceAddress(@ApiParam(value = "Address identifier.", required = true) @PathVariable final String addressId,
+	public void replaceAddress(@Parameter(description = "Address identifier.", required = true)
+	@PathVariable
+	final String addressId,
 			final HttpServletRequest request)
 	{
 		LOG.debug("editAddress: id={}", sanitize(addressId));
@@ -207,10 +217,13 @@ public class AddressController extends BaseCommerceController
 	@RequestMapping(value = "/{addressId}", method = RequestMethod.PUT, consumes = { MediaType.APPLICATION_JSON_VALUE,
 			MediaType.APPLICATION_XML_VALUE })
 	@ResponseStatus(HttpStatus.OK)
-	@ApiOperation(nickname = "replaceAddress", value = "Updates the address", notes = "Updates the address. Attributes not provided in the request will be defined again (set to null or default).")
+	@Operation(operationId = "replaceAddress", summary = "Updates the address", description = "Updates the address. Attributes not provided in the request will be defined again (set to null or default).")
 	@ApiBaseSiteIdAndUserIdParam
-	public void replaceAddress(@ApiParam(value = "Address identifier.", required = true) @PathVariable final String addressId,
-			@ApiParam(value = "Address object.", required = true) @RequestBody final AddressWsDTO address)
+	public void replaceAddress(@Parameter(description = "Address identifier.", required = true)
+	@PathVariable
+	final String addressId, @Parameter(description = "Address object.", required = true)
+	@RequestBody
+	final AddressWsDTO address)
 	{
 		validate(address, OBJECT_NAME_ADDRESS, getAddressDTOValidator());
 		final AddressData addressData = getAddressData(addressId);
@@ -232,10 +245,12 @@ public class AddressController extends BaseCommerceController
 	@Deprecated(since = "2005", forRemoval = true)
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })
 	@RequestMapping(value = "/{addressId}", method = RequestMethod.PATCH)
-	@ApiOperation(hidden = true, value = "Updates the address", notes = "Updates the address. Only attributes provided in the request body will be changed.")
+	@Operation(hidden = true, summary = "Updates the address", description = "Updates the address. Only attributes provided in the request body will be changed.")
 	@ApiBaseSiteIdAndUserIdAndAddressParams
 	@ResponseStatus(HttpStatus.OK)
-	public void updateAddress(@ApiParam(value = "Address identifier.", required = true) @PathVariable final String addressId,
+	public void updateAddress(@Parameter(description = "Address identifier.", required = true)
+	@PathVariable
+	final String addressId,
 			final HttpServletRequest request)
 	{
 		LOG.debug("editAddress: id={}", sanitize(addressId));
@@ -267,11 +282,14 @@ public class AddressController extends BaseCommerceController
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })
 	@RequestMapping(value = "/{addressId}", method = RequestMethod.PATCH, consumes = { MediaType.APPLICATION_JSON_VALUE,
 			MediaType.APPLICATION_XML_VALUE })
-	@ApiOperation(nickname = "updateAddress", value = "Updates the address", notes = "Updates the address. Only attributes provided in the request body will be changed.")
+	@Operation(operationId = "updateAddress", summary = "Updates the address", description = "Updates the address. Only attributes provided in the request body will be changed.")
 	@ApiBaseSiteIdAndUserIdParam
 	@ResponseStatus(HttpStatus.OK)
-	public void updateAddress(@ApiParam(value = "Address identifier.", required = true) @PathVariable final String addressId,
-			@ApiParam(value = "Address object", required = true) @RequestBody final AddressWsDTO address)
+	public void updateAddress(@Parameter(description = "Address identifier.", required = true)
+	@PathVariable
+	final String addressId, @Parameter(description = "Address object", required = true)
+	@RequestBody
+	final AddressWsDTO address)
 	{
 		final AddressData addressData = getAddressData(addressId);
 		final boolean isAlreadyDefaultAddress = addressData.isDefaultAddress();
@@ -294,10 +312,12 @@ public class AddressController extends BaseCommerceController
 
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })
 	@RequestMapping(value = "/{addressId}", method = RequestMethod.DELETE)
-	@ApiOperation(nickname = "removeAddress", value = "Delete customer's address.", notes = "Removes customer's address.")
+	@Operation(operationId = "removeAddress", summary = "Delete customer's address.", description = "Removes customer's address.")
 	@ApiBaseSiteIdAndUserIdParam
 	@ResponseStatus(HttpStatus.OK)
-	public void removeAddress(@ApiParam(value = "Address identifier.", required = true) @PathVariable final String addressId)
+	public void removeAddress(@Parameter(description = "Address identifier.", required = true)
+	@PathVariable
+	final String addressId)
 	{
 		LOG.debug("removeAddress: id={}", sanitize(addressId));
 		final AddressData address = getAddressData(addressId);
@@ -322,16 +342,16 @@ public class AddressController extends BaseCommerceController
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_CLIENT", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })
 	@RequestMapping(value = "/verification", method = RequestMethod.POST)
 	@ResponseBody
-	@ApiOperation(hidden = true, value = "Verifies the address", notes = "Verifies the address.")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "baseSiteId", value = "Base site identifier", required = true, dataType = "String", paramType = "path"),
-			@ApiImplicitParam(name = "userId", value = "User identifier", required = true, dataType = "String", paramType = "path"),
-			@ApiImplicitParam(name = "country.isocode", value = "Country isocode. This parameter is required and have influence on how rest of parameters are validated (e.g. if parameters are required : line1,line2,town,postalCode,region.isocode)", required = true, dataType = "String", paramType = "query"),
-			@ApiImplicitParam(name = "line1", value = "First part of address. If this parameter is required depends on country (usually it is required).", required = false, dataType = "String", paramType = "query"),
-			@ApiImplicitParam(name = "line2", value = "Second part of address. If this parameter is required depends on country (usually it is not required)", required = false, dataType = "String", paramType = "query"),
-			@ApiImplicitParam(name = "town", value = "Town name. If this parameter is required depends on country (usually it is required)", required = false, dataType = "String", paramType = "query"),
-			@ApiImplicitParam(name = "postalCode", value = "Postal code. Isocode for region. If this parameter is required depends on country.", required = false, dataType = "String", paramType = "query"),
-			@ApiImplicitParam(name = "region.isocode", value = "Isocode for region. If this parameter is required depends on country.", required = false, dataType = "String", paramType = "query") })
+	@Operation(hidden = true, summary = "Verifies the address", description = "Verifies the address.")
+	@Parameters(
+	{ @Parameter(name = "baseSiteId", description = "Base site identifier", required = true, schema = @Schema(type = "string"), in = ParameterIn.PATH),
+			@Parameter(name = "userId", description = "User identifier", required = true, schema = @Schema(type = "string"), in = ParameterIn.PATH),
+			@Parameter(name = "country.isocode", description = "Country isocode. This parameter is required and have influence on how rest of parameters are validated (e.g. if parameters are required : line1,line2,town,postalCode,region.isocode)", required = true, schema = @Schema(type = "string"), in = ParameterIn.QUERY),
+			@Parameter(name = "line1", description = "First part of address. If this parameter is required depends on country (usually it is required).", required = false, schema = @Schema(type = "string"), in = ParameterIn.QUERY),
+			@Parameter(name = "line2", description = "Second part of address. If this parameter is required depends on country (usually it is not required)", required = false, schema = @Schema(type = "string"), in = ParameterIn.QUERY),
+			@Parameter(name = "town", description = "Town name. If this parameter is required depends on country (usually it is required)", required = false, schema = @Schema(type = "string"), in = ParameterIn.QUERY),
+			@Parameter(name = "postalCode", description = "Postal code. Isocode for region. If this parameter is required depends on country.", required = false, schema = @Schema(type = "string"), in = ParameterIn.QUERY),
+			@Parameter(name = "region.isocode", description = "Isocode for region. If this parameter is required depends on country.", required = false, schema = @Schema(type = "string"), in = ParameterIn.QUERY) })
 	public AddressValidationWsDTO validateAddress(final HttpServletRequest request,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
@@ -350,11 +370,13 @@ public class AddressController extends BaseCommerceController
 	@Secured({ "ROLE_CUSTOMERGROUP", "ROLE_CLIENT", "ROLE_TRUSTED_CLIENT", "ROLE_CUSTOMERMANAGERGROUP" })
 	@RequestMapping(value = "/verification", method = RequestMethod.POST, consumes = { MediaType.APPLICATION_JSON_VALUE,
 			MediaType.APPLICATION_XML_VALUE })
-	@ApiOperation(nickname = "validateAddress", value = "Verifies address.", notes = "Verifies address.")
+	@Operation(operationId = "validateAddress", summary = "Verifies address.", description = "Verifies address.")
 	@ApiBaseSiteIdAndUserIdParam
 	@ResponseBody
 	public AddressValidationWsDTO validateAddress(
-			@ApiParam(value = "Address object.", required = true) @RequestBody final AddressWsDTO address,
+			@Parameter(description = "Address object.", required = true)
+			@RequestBody
+			final AddressWsDTO address,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
 		// validation is a bit different here

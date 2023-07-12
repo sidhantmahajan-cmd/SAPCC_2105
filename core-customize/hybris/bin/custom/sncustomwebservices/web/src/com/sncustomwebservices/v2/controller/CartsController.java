@@ -23,11 +23,6 @@ import de.hybris.platform.webservicescommons.cache.CacheControlDirective;
 import de.hybris.platform.webservicescommons.swagger.ApiBaseSiteIdAndUserIdParam;
 import de.hybris.platform.webservicescommons.swagger.ApiBaseSiteIdUserIdAndCartIdParam;
 import de.hybris.platform.webservicescommons.swagger.ApiFieldsParam;
-import com.sncustomwebservices.cart.impl.CommerceWebServicesCartFacade;
-import com.sncustomwebservices.order.data.CartDataList;
-import com.sncustomwebservices.validation.data.CartVoucherValidationData;
-
-import javax.annotation.Resource;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,6 +30,8 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import javax.annotation.Resource;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -54,15 +51,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import com.sncustomwebservices.cart.impl.CommerceWebServicesCartFacade;
+import com.sncustomwebservices.order.data.CartDataList;
+import com.sncustomwebservices.validation.data.CartVoucherValidationData;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 
 @Controller
 @RequestMapping(value = "/{baseSiteId}/users/{userId}/carts")
 @CacheControl(directive = CacheControlDirective.NO_CACHE)
-@Api(tags = "Carts")
+@Tag(name = "Carts")
 public class CartsController extends BaseCommerceController
 {
 	private static final Logger LOG = LoggerFactory.getLogger(CartsController.class);
@@ -77,13 +78,21 @@ public class CartsController extends BaseCommerceController
 
 	@GetMapping
 	@ResponseBody
-	@ApiOperation(nickname = "getCarts", value = "Get all customer carts.", notes = "Lists all customer carts.")
+	@Operation(operationId = "getCarts", summary = "Get all customer carts.", description = "Lists all customer carts.")
 	@ApiBaseSiteIdAndUserIdParam
 	public CartListWsDTO getCarts(@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields,
-			@ApiParam(value = "Optional parameter. If the parameter is provided and its value is true, only saved carts are returned.") @RequestParam(defaultValue = "false") final boolean savedCartsOnly,
-			@ApiParam(value = "Optional pagination parameter in case of savedCartsOnly == true. Default value 0.") @RequestParam(defaultValue = DEFAULT_CURRENT_PAGE) final int currentPage,
-			@ApiParam(value = "Optional {@link PaginationData} parameter in case of savedCartsOnly == true. Default value 20.") @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) final int pageSize,
-			@ApiParam(value = "Optional sort criterion in case of savedCartsOnly == true. No default value.") @RequestParam(required = false) final String sort)
+			@Parameter(description = "Optional parameter. If the parameter is provided and its value is true, only saved carts are returned.")
+			@RequestParam(defaultValue = "false")
+			final boolean savedCartsOnly,
+			@Parameter(description = "Optional pagination parameter in case of savedCartsOnly == true. Default value 0.")
+			@RequestParam(defaultValue = DEFAULT_CURRENT_PAGE)
+			final int currentPage,
+			@Parameter(description = "Optional {@link PaginationData} parameter in case of savedCartsOnly == true. Default value 20.")
+			@RequestParam(defaultValue = DEFAULT_PAGE_SIZE)
+			final int pageSize,
+			@Parameter(description = "Optional sort criterion in case of savedCartsOnly == true. No default value.")
+			@RequestParam(required = false)
+			final String sort)
 	{
 		if (getUserFacade().isAnonymousUser())
 		{
@@ -109,7 +118,7 @@ public class CartsController extends BaseCommerceController
 
 	@GetMapping(value = "/{cartId}")
 	@ResponseBody
-	@ApiOperation(nickname = "getCart", value = "Get a cart with a given identifier.", notes = "Returns the cart with a given identifier.")
+	@Operation(operationId = "getCart", summary = "Get a cart with a given identifier.", description = "Returns the cart with a given identifier.")
 	@ApiBaseSiteIdUserIdAndCartIdParam
 	public CartWsDTO getCart(@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
@@ -120,10 +129,13 @@ public class CartsController extends BaseCommerceController
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	@ResponseBody
-	@ApiOperation(nickname = "createCart", value = "Creates or restore a cart for a user.", notes = "Creates a new cart or restores an anonymous cart as a user's cart (if an old Cart Id is given in the request).")
+	@Operation(operationId = "createCart", summary = "Creates or restore a cart for a user.", description = "Creates a new cart or restores an anonymous cart as a user's cart (if an old Cart Id is given in the request).")
 	@ApiBaseSiteIdAndUserIdParam
-	public CartWsDTO createCart(@ApiParam(value = "Anonymous cart GUID.") @RequestParam(required = false) final String oldCartId,
-			@ApiParam(value = "The GUID of the user's cart that will be merged with the anonymous cart.") @RequestParam(required = false) final String toMergeCartGuid,
+	public CartWsDTO createCart(@Parameter(description = "Anonymous cart GUID.")
+	@RequestParam(required = false)
+	final String oldCartId, @Parameter(description = "The GUID of the user's cart that will be merged with the anonymous cart.")
+	@RequestParam(required = false)
+	final String toMergeCartGuid,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
 		LOG.debug("createCart");
@@ -191,7 +203,7 @@ public class CartsController extends BaseCommerceController
 
 	@DeleteMapping(value = "/{cartId}")
 	@ResponseStatus(HttpStatus.OK)
-	@ApiOperation(nickname = "removeCart", value = "Deletes a cart with a given cart id.", notes = "Deletes a cart with a given cart id.")
+	@Operation(operationId = "removeCart", summary = "Deletes a cart with a given cart id.", description = "Deletes a cart with a given cart id.")
 	@ApiBaseSiteIdUserIdAndCartIdParam
 	public void removeCart()
 	{
@@ -201,10 +213,12 @@ public class CartsController extends BaseCommerceController
 	@Secured({ "ROLE_CLIENT", "ROLE_TRUSTED_CLIENT" })
 	@PutMapping(value = "/{cartId}/email")
 	@ResponseStatus(HttpStatus.OK)
-	@ApiOperation(nickname = "replaceCartGuestUser", value = "Assigns an email to the cart.", notes = "Assigns an email to the cart. This step is required to make a guest checkout.")
+	@Operation(operationId = "replaceCartGuestUser", summary = "Assigns an email to the cart.", description = "Assigns an email to the cart. This step is required to make a guest checkout.")
 	@ApiBaseSiteIdUserIdAndCartIdParam
 	public void replaceCartGuestUser(
-			@ApiParam(value = "Email of the guest user. It will be used during the checkout process.", required = true) @RequestParam final String email)
+			@Parameter(description = "Email of the guest user. It will be used during the checkout process.", required = true)
+			@RequestParam
+			final String email)
 			throws DuplicateUidException
 	{
 		if (LOG.isDebugEnabled())
@@ -222,7 +236,7 @@ public class CartsController extends BaseCommerceController
 
 	@PostMapping(path = "/{cartId}/validate")
 	@ResponseBody
-	@ApiOperation(nickname = "validateCart", value = "Validates the cart", notes = "Runs a cart validation and returns the result.")
+	@Operation(operationId = "validateCart", summary = "Validates the cart", description = "Runs a cart validation and returns the result.")
 	@ApiBaseSiteIdUserIdAndCartIdParam
 	public CartModificationListWsDTO validateCart(
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)

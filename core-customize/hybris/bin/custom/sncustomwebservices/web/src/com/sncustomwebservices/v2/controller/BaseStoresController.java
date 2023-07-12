@@ -21,9 +21,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+
 
 
 /**
@@ -32,7 +34,7 @@ import io.swagger.annotations.ApiParam;
 @Controller
 @RequestMapping(value = "/{baseSiteId}/basestores")
 @CacheControl(directive = CacheControlDirective.PUBLIC, maxAge = 1800)
-@Api(tags = "Base Stores")
+@Tag(name = "Base Stores")
 public class BaseStoresController extends BaseController
 {
 	@Resource(name = "baseStoreFacade")
@@ -40,10 +42,12 @@ public class BaseStoresController extends BaseController
 
 	@RequestMapping(value = "/{baseStoreUid}", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(nickname = "getBaseStore", value = "Get a base store.", notes = "Returns details of a specific base store based on its identifier. The response contains detailed base store information.")
+	@Operation(operationId = "getBaseStore", summary = "Get a base store.", description = "Returns details of a specific base store based on its identifier. The response contains detailed base store information.")
 	@ApiBaseSiteIdParam
 	public BaseStoreWsDTO getBaseStore(
-			@ApiParam(value = "Base store name", required = true) @PathVariable final String baseStoreUid,
+			@Parameter(name = "Base store name", required = true)
+			@PathVariable
+			final String baseStoreUid,
 			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)
 	{
 		final BaseStoreData baseStoreData = baseStoreFacade.getBaseStoreByUid(baseStoreUid);
