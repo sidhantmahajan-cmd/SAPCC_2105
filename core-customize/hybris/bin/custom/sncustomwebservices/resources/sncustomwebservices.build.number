@@ -1,0 +1,11 @@
+#Ant properties
+#Wed Jul 05 03:37:02 CEST 2023
+version.api=2211
+vendor=hybris
+group.id=de.hybris.platform
+name=sncustomwebservices
+description=sncustomwebservices
+builddate=20230705 0336
+releasedate=20230615 1237
+version=2211.9
+module.name=platform-module
